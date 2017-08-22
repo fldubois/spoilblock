@@ -1,0 +1,18 @@
+{
+  "name": "spoilblock",
+  "version": "0.0.0",
+  "description": "Browser extension to save people from spoilers",
+  "author": "Florent Dubois <florent.dubois@devaddict.io>",
+  "license": "MIT",
+  "homepage": "https://github.com/fldubois/spoilblock",
+  "bugs": "https://github.com/fldubois/spoilblock/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fldubois/spoilblock.git"
+  },
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
