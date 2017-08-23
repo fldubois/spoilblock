@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "SpoilBlock",
+  "version": "0.0.0",
+
+  "description": "No more spoiler !",
+  "author": "Florent Dubois <florent.dubois@devaddict.io>",
+
+  "homepage_url": "https://github.com/fldubois/spoilblock",
+
+  "icons": {
+    "48": "icons/logo.svg",
+    "96": "icons/logo.svg"
+  },
+
+  "incognito": "spanning"
+}
