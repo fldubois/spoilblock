@@ -14,5 +14,14 @@
     "96": "icons/logo.svg"
   },
 
-  "incognito": "spanning"
+  "incognito": "spanning",
+
+  "browser_action": {
+    "default_icon": "icons/logo.svg",
+    "default_title": "SpoilBlock"
+  },
+
+  "background": {
+    "scripts": ["js/background.js"]
+  }
 }
