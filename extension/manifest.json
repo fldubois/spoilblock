@@ -16,6 +16,10 @@
 
   "incognito": "spanning",
 
+  "permissions": [
+    "activeTab"
+  ],
+
   "browser_action": {
     "default_icon": "icons/logo.svg",
     "default_title": "SpoilBlock"
