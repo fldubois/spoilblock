@@ -13,3 +13,21 @@
 
   z-index:99999;
 }
+
+.spoilblock-select-box {
+  position: absolute;
+
+  top:  0;
+  left: 0;
+
+  width:  0;
+  height: 0;
+
+  background-color: rgba(183, 226, 243, 0.8);
+
+  box-sizing: border-box;
+
+  border: 1px dashed rgba(0, 136, 204, 1);
+
+  pointer-events: none;
+}
