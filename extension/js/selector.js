@@ -11,12 +11,15 @@
 
   document.body.appendChild(layer);
 
+  let target = null;
+
   document.body.addEventListener('mouseover', function (event) {
-    let target  = event.target;
+    target  = event.target;
+
     let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
 
     while (display !== 'block') {
-      target  = target.parent;
+      target  = target.parentElement;
       display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
     }
 
@@ -29,9 +32,49 @@
     select.style.height = rect.height + 'px';
   });
 
+  document.body.addEventListener('click', function (event) {
+    const selector = createSelector(target);
+
+    event.stopPropagation();
+    event.preventDefault();
+  }, true);
+
   browser.runtime.onMessage.addListener((message) => {
     if (typeof message === 'object' && message.action === 'disable') {
       document.body.removeChild(layer);
     }
   });
+
+  function createSelector(element) {
+    const selectors = [];
+
+    let current  = element;
+    let parent   = current.parentElement;
+
+    selectors.unshift(current.tagName.toLowerCase() + (current.id !== '' ? '#' + current.id : ''));
+
+    while (parent !== null && current.id === '') {
+      const siblings = Array.prototype.filter.call(parent.children || [], function (item) {
+        return (item.tagName === current.tagName);
+      });
+
+      if (siblings.length > 1) {
+        let index = 0;
+
+        while (siblings[index] !== current) {
+          index++;
+        }
+
+        selectors[0] += ':nth-of-type(' + (index + 1) + ')';
+      }
+
+      current = parent;
+      parent  = current.parentElement;
+
+      selectors.unshift(current.tagName.toLowerCase() + (current.id !== '' ? '#' + current.id : ''));
+    };
+
+    return selectors.join(' > ');
+  }
+
 }
