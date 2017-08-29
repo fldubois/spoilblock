@@ -1,6 +1,8 @@
 'use strict';
 
 {
+  // DOM structure
+
   const select = document.createElement('div');
   const layer  = document.createElement('div');
 
@@ -11,41 +13,55 @@
 
   document.body.appendChild(layer);
 
+  // Event handlers
+
   let target = null;
 
-  document.body.addEventListener('mouseover', function (event) {
-    target  = event.target;
+  const handlers = {
+    mouseover: (event) => {console.log(event);
+      target  = event.target;
 
-    let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+      let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
 
-    while (display !== 'block') {
-      target  = target.parentElement;
-      display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+      while (display !== 'block') {
+        target  = target.parentElement;
+        display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+      }
+
+      const rect = target.getBoundingClientRect();
+
+      select.style.top  = (window.scrollY + rect.top)  + 'px';
+      select.style.left = (window.scrollX + rect.left) + 'px';
+
+      select.style.width  = rect.width  + 'px';
+      select.style.height = rect.height + 'px';
+    },
+    click: (event) => {
+      const selector = createSelector(target);
+
+      event.stopPropagation();
+      event.preventDefault();
+    },
+    message: (message) => {
+      if (typeof message === 'object' && message.action === 'disable') {
+        document.body.removeChild(layer);
+
+        document.body.removeEventListener('mouseover', handlers.mouseover);
+        document.body.removeEventListener('click', handlers.click);
+
+        browser.runtime.onMessage.removeListener(handlers.message);
+      }
     }
+  }
 
-    const rect = target.getBoundingClientRect();
+  document.body.addEventListener('mouseover', handlers.mouseover);
+  document.body.addEventListener('click', handlers.click, true);
 
-    select.style.top  = (window.scrollY + rect.top)  + 'px';
-    select.style.left = (window.scrollX + rect.left) + 'px';
+  browser.runtime.onMessage.addListener(handlers.message);
 
-    select.style.width  = rect.width  + 'px';
-    select.style.height = rect.height + 'px';
-  });
+  // Utils
 
-  document.body.addEventListener('click', function (event) {
-    const selector = createSelector(target);
-
-    event.stopPropagation();
-    event.preventDefault();
-  }, true);
-
-  browser.runtime.onMessage.addListener((message) => {
-    if (typeof message === 'object' && message.action === 'disable') {
-      document.body.removeChild(layer);
-    }
-  });
-
-  function createSelector(element) {
+  const createSelector = function (element) {
     const selectors = [];
 
     let current  = element;
@@ -76,5 +92,4 @@
 
     return selectors.join(' > ');
   }
-
 }
