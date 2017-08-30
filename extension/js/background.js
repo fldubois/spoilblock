@@ -16,10 +16,14 @@ const enable = function () {
 
     browser.tabs.insertCSS(active.id, {file: 'css/selector.css'});
     browser.tabs.executeScript(active.id, {file: 'js/selector.js'});
+
+    browser.runtime.onMessage.addListener(onMessage);
   }).catch(console.error);
 };
 
 const disable = function () {
+  browser.runtime.onMessage.removeListener(onMessage);
+
   browser.tabs.sendMessage(active.id, {action: 'disable'});
 
   browser.tabs.removeCSS(active.id, {file: 'css/selector.css'});
@@ -33,6 +37,14 @@ const disable = function () {
   });
 
   active = null;
+}
+
+const onMessage = function (message, sender) {
+  if (typeof sender.tab === 'object' && sender.tab.active === true && typeof message === 'object') {
+    if (message.action === 'disable') {
+      disable();
+    }
+  }
 }
 
 browser.browserAction.onClicked.addListener(() => {

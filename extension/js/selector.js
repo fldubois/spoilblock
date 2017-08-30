@@ -18,7 +18,7 @@
   let target = null;
 
   const handlers = {
-    mouseover: (event) => {console.log(event);
+    mouseover: (event) => {
       target  = event.target;
 
       let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
@@ -42,6 +42,11 @@
       event.stopPropagation();
       event.preventDefault();
     },
+    keypress: (event) => {
+      if (event.key === 'Escape') {
+        browser.runtime.sendMessage({action: 'disable'});
+      }
+    },
     message: (message) => {
       if (typeof message === 'object' && message.action === 'disable') {
         document.body.removeChild(layer);
@@ -56,6 +61,7 @@
 
   document.body.addEventListener('mouseover', handlers.mouseover);
   document.body.addEventListener('click', handlers.click, true);
+  document.body.addEventListener('keypress', handlers.keypress, true);
 
   browser.runtime.onMessage.addListener(handlers.message);
 
