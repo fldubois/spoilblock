@@ -67,34 +67,28 @@
 
   // Utils
 
-  const createSelector = function (element) {
-    const selectors = [];
+  const createSelector = function (element, selectors = []) {
+    const tag = element.tagName.toLowerCase();
 
-    let current  = element;
-    let parent   = current.parentElement;
+    if (tag === 'img') {
+      selectors.unshift(`${tag}[src="${element.src}"]`);
+    } else if (element.id !== '') {
+      selectors.unshift(`${tag}#${element.id}`);
+    } else {
+      selectors.unshift(tag);
 
-    selectors.unshift(current.tagName.toLowerCase() + (current.id !== '' ? '#' + current.id : ''));
+      if (element.parentElement !== null && element.id === '') {
+        const siblings = Array.prototype.filter.call(element.parentElement.children || [], function (item) {
+          return (item.tagName === element.tagName);
+        });
 
-    while (parent !== null && current.id === '') {
-      const siblings = Array.prototype.filter.call(parent.children || [], function (item) {
-        return (item.tagName === current.tagName);
-      });
-
-      if (siblings.length > 1) {
-        let index = 0;
-
-        while (siblings[index] !== current) {
-          index++;
+        if (siblings.length > 1) {
+          selectors[0] += ':nth-of-type(' + (siblings.indexOf(element) + 1) + ')';
         }
 
-        selectors[0] += ':nth-of-type(' + (index + 1) + ')';
-      }
-
-      current = parent;
-      parent  = current.parentElement;
-
-      selectors.unshift(current.tagName.toLowerCase() + (current.id !== '' ? '#' + current.id : ''));
-    };
+        return createSelector(element.parentElement, selectors);
+      };
+    }
 
     return selectors.join(' > ');
   }
