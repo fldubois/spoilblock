@@ -1,7 +1,7 @@
 {
-  "name": "spoilblock",
+  "name": "spoilblock-api",
   "version": "0.0.0",
-  "description": "Browser extension to save people from spoilers",
+  "description": "Spoilblock backend",
   "author": "Florent Dubois <florent.dubois@devaddict.io>",
   "license": "MIT",
   "homepage": "https://github.com/fldubois/spoilblock",
@@ -11,17 +11,16 @@
     "url": "git+https://github.com/fldubois/spoilblock.git"
   },
   "private": true,
-  "engines" : {
+  "engines": {
     "node": ">=6.0.0",
     "npm": ">=3.0.0"
   },
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "ext:lint": "web-ext lint --source-dir extension",
-    "ext:run": "web-ext run --source-dir extension",
-    "api:start": "NODE_CONFIG_DIR=api/config node api"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "devDependencies": {
-    "web-ext": "^2.0.0"
+  "dependencies": {
+    "config": "^1.26.2",
+    "express": "^4.15.4"
   }
 }
