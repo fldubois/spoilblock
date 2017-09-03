@@ -20,6 +20,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "ajv": "^5.2.2",
+    "body-parser": "^1.17.2",
     "config": "^1.26.2",
     "express": "^4.15.4"
   }
