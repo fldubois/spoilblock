@@ -9,5 +9,7 @@
     "selector": { "type": "string" }
   },
 
-  "required": ["domain", "url", "selector"]
+  "required": ["domain", "url", "selector"],
+
+  "additionalProperties": false
 }

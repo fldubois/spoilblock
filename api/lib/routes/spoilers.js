@@ -2,6 +2,9 @@
 
 const ajv     = require('ajv')({allErrors: true});
 const express = require('express');
+const uuid    = require('uuid');
+
+const db = require('../common/database');
 
 const schema = require('../schemas/spoiler.json');
 
@@ -15,7 +18,16 @@ router.post('/', function (req, res) {
     });
   }
 
-  res.json(req.body);
+  const doc = Object.assign({_id: uuid.v4()}, req.body);
+
+  db.put(doc).then((result) => {
+    return res.status(200).json(doc);
+  }).catch((error) => {
+    return res.status(500).json({
+      error:   error.name,
+      message: error.message
+    });
+  });
 });
 
 module.exports = router;
