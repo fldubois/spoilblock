@@ -39,6 +39,30 @@
     click: (event) => {
       const selector = createSelector(target);
 
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('POST', 'http://localhost:8080/spoilers', true);
+
+      xhr.setRequestHeader('Content-type', 'application/json');
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          console.log('Spoiler created', JSON.parse(xhr.responseText));
+        } else {
+          console.log('Fail to create spoiler, API returned status ', xhr.status);
+        }
+      });
+
+      xhr.addEventListener('error', (event) => {
+        console.log('API call error');
+      });
+
+      xhr.send(JSON.stringify({
+        domain:   window.location.hostname,
+        url:      window.location.href,
+        selector: selector
+      }));
+
       event.stopPropagation();
       event.preventDefault();
     },
