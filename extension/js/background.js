@@ -59,4 +59,8 @@ browser.tabs.onActivated.addListener((infos) => {
   if (active !== null && infos.tabId !== active.id) {
     disable();
   }
-})
+});
+
+browser.webNavigation.onCompleted.addListener(function (details) {
+  browser.tabs.executeScript(details.tabId, {file: 'js/mask.js'});
+});
