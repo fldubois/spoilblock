@@ -7,5 +7,10 @@ module.exports = {
 
   database: {
     path: path.resolve(__dirname, '../data/spoilblock')
+  },
+
+  logger: {
+    level: 'info',
+    path:  path.resolve(__dirname, '../logs')
   }
 };

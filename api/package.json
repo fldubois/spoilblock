@@ -22,8 +22,10 @@
   "dependencies": {
     "ajv": "^5.2.2",
     "body-parser": "^1.17.2",
+    "bunyan": "^1.8.12",
     "config": "^1.26.2",
     "express": "^4.15.4",
+    "on-finished": "^2.3.0",
     "pouchdb-find": "^6.3.4",
     "pouchdb-node": "^6.3.4",
     "uuid": "^3.1.0"

@@ -45,6 +45,8 @@ router.post('/', function (req, res) {
   const doc = Object.assign({_id: uuid.v4()}, req.body);
 
   db.put(doc).then((result) => {
+    req.logger.info({ns: 'spoilers', doc: doc}, 'Spoiler created');
+
     return res.status(200).json(doc);
   }).catch((error) => {
     return res.status(500).json({
