@@ -1,7 +1,7 @@
 {
-  "name": "spoilblock",
+  "name": "spoilblock-extension",
   "version": "0.0.0",
-  "description": "Browser extension to save people from spoilers",
+  "description": "Spoilblock WebExtension",
   "author": "Florent Dubois <florent.dubois@devaddict.io>",
   "license": "MIT",
   "homepage": "https://github.com/fldubois/spoilblock",
@@ -16,7 +16,11 @@
     "npm": ">=3.0.0"
   },
   "scripts": {
-    "api": "cd api && npm run",
-    "ext": "cd extension && npm run"
+    "test": "npm run test:lint",
+    "test:lint": "web-ext lint --source-dir files",
+    "start": "web-ext run --source-dir files"
+  },
+  "devDependencies": {
+    "web-ext": "^2.0.0"
   }
 }
