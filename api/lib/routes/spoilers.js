@@ -27,6 +27,8 @@ router.get('/', function (req, res) {
   }).then(function (result) {
     return res.status(200).json(result.docs);
   }).catch(function (error) {
+    logger.error(error);
+
     return res.status(500).json({
       error:   error.name,
       message: error.message
@@ -42,13 +44,31 @@ router.post('/', function (req, res) {
     });
   }
 
-  const doc = Object.assign({_id: uuid.v4()}, req.body);
+  db.find({
+    selector: {
+      domain:   req.body.domain,
+      selector: req.body.selector
+    }
+  }).then(function (result) {
+    if (result.docs.length > 0) {
+      req.logger.info({ns: 'spoilers', doc: req.body}, 'Spoiler conflict');
 
-  db.put(doc).then((result) => {
-    req.logger.info({ns: 'spoilers', doc: doc}, 'Spoiler created');
+      return res.status(409).json({
+        error:   'Conflict',
+        message: 'A spoiler with this combination of domain and selector already exists'
+      });
+    }
 
-    return res.status(200).json(doc);
-  }).catch((error) => {
+    const doc = Object.assign({_id: uuid.v4()}, req.body);
+
+    return db.put(doc).then((result) => {
+      req.logger.info({ns: 'spoilers', doc: doc}, 'Spoiler created');
+
+      return res.status(200).json(doc);
+    });
+  }).catch(function (error) {
+    logger.error(error);
+
     return res.status(500).json({
       error:   error.name,
       message: error.message
