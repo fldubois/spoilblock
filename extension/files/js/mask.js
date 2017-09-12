@@ -1,5 +1,7 @@
 'use strict';
 
+const elements = [];
+
 const xhr = new XMLHttpRequest();
 
 xhr.open('GET', `http://localhost:8080/spoilers?domain=${window.location.hostname}`, false);
@@ -12,8 +14,19 @@ if (xhr.status === 200) {
   spoilers.forEach((spoiler) => {
     var element = document.querySelector(spoiler.selector);
 
-    if (element !== null) {
+    if (element !== null && elements.indexOf(element) === -1) {
       element.classList.add('spoilblock-masked');
+
+      element.addEventListener('dblclick', function listener(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        element.classList.remove('spoilblock-masked');
+
+        element.removeEventListener('dblclick', listener, true)
+      }, true);
+
+      elements.push(element);
     }
   });
 } else {
