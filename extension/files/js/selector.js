@@ -3,68 +3,101 @@
 {
   // DOM structure
 
-  const select = document.createElement('div');
-  const layer  = document.createElement('div');
+  const layer = document.createElement('div');
 
-  select.classList.add('spoilblock-select-box');
+  layer.setAttribute('id', 'spoilblock-select-layer');
 
-  layer.classList.add('spoilblock-select-layer');
-  layer.appendChild(select);
+  layer.innerHTML = `
+    <div id="spoilblock-select-box"></div>
+    <div id="spoilblock-select-container">
+      <div id="spoilblock-select-popup">
+        <h1>Report a spoiler</h1>
+        <pre id="spoilblock-select-popup-selector"></pre>
+        <div>
+          <button id="spoilblock-select-popup-cancel">Cancel</button>
+          <button id="spoilblock-select-popup-report">Report</button>
+        </div>
+      </div>
+    </div>
+  `;
 
   document.body.appendChild(layer);
 
+  const elements = {
+    box:      layer.querySelector('#spoilblock-select-box'),
+    popup:    layer.querySelector('#spoilblock-select-popup'),
+    selector: layer.querySelector('#spoilblock-select-popup-selector'),
+    cancel:   layer.querySelector('#spoilblock-select-popup-cancel'),
+    report:   layer.querySelector('#spoilblock-select-popup-report')
+  };
+
   // Event handlers
 
-  let target = null;
+  let target   = null;
+  let selector = null;
 
   const handlers = {
     mouseover: (event) => {
-      target  = event.target;
+      if (!elements.popup.classList.contains('visible')) {
+        target  = event.target;
 
-      let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+        let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
 
-      while (display !== 'block') {
-        target  = target.parentElement;
-        display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+        while (display !== 'block') {
+          target  = target.parentElement;
+          display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+        }
+
+        const rect = target.getBoundingClientRect();
+
+        elements.box.style.top  = (window.scrollY + rect.top)  + 'px';
+        elements.box.style.left = (window.scrollX + rect.left) + 'px';
+
+        elements.box.style.width  = rect.width  + 'px';
+        elements.box.style.height = rect.height + 'px';
       }
-
-      const rect = target.getBoundingClientRect();
-
-      select.style.top  = (window.scrollY + rect.top)  + 'px';
-      select.style.left = (window.scrollX + rect.left) + 'px';
-
-      select.style.width  = rect.width  + 'px';
-      select.style.height = rect.height + 'px';
     },
     click: (event) => {
-      const selector = createSelector(target);
-
-      var xhr = new XMLHttpRequest();
-
-      xhr.open('POST', 'http://localhost:8080/spoilers', true);
-
-      xhr.setRequestHeader('Content-type', 'application/json');
-
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          console.log('Spoiler created', JSON.parse(xhr.responseText));
-        } else {
-          console.log('Fail to create spoiler, API returned status ', xhr.status);
-        }
-      });
-
-      xhr.addEventListener('error', (event) => {
-        console.log('API call error');
-      });
-
-      xhr.send(JSON.stringify({
-        domain:   window.location.hostname,
-        url:      window.location.href,
-        selector: selector
-      }));
-
       event.stopPropagation();
       event.preventDefault();
+
+      if (event.target === elements.report) {console.log('report');
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', 'http://localhost:8080/spoilers', true);
+
+        xhr.setRequestHeader('Content-type', 'application/json');
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status === 200) {
+            console.log('Spoiler created', JSON.parse(xhr.responseText));
+          } else {
+            console.log('Fail to create spoiler, API returned status ', xhr.status);
+          }
+
+          browser.runtime.sendMessage({action: 'disable'});
+        });
+
+        xhr.addEventListener('error', (event) => {
+          console.log('API call error');
+
+          browser.runtime.sendMessage({action: 'disable'});
+        });
+
+        xhr.send(JSON.stringify({
+          domain:   window.location.hostname,
+          url:      window.location.href,
+          selector: selector
+        }));
+      } else if (event.target === elements.cancel) {
+        elements.popup.classList.remove('visible');
+      } else {
+        selector = createSelector(target);
+
+        elements.selector.innerText = selector;
+
+        elements.popup.classList.add('visible');
+      }
     },
     keypress: (event) => {
       if (event.key === 'Escape') {
@@ -76,7 +109,8 @@
         document.body.removeChild(layer);
 
         document.body.removeEventListener('mouseover', handlers.mouseover);
-        document.body.removeEventListener('click', handlers.click);
+        document.body.removeEventListener('click', handlers.click, true);
+        document.body.removeEventListener('keypress', handlers.keypress, true);
 
         browser.runtime.onMessage.removeListener(handlers.message);
       }
