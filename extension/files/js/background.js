@@ -2,6 +2,8 @@
 
 let active = null;
 
+const actions = {}
+
 const enable = function () {
   browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
     active = tabs.pop();
@@ -16,36 +18,40 @@ const enable = function () {
 
     browser.tabs.insertCSS(active.id, {file: 'css/selector.css'});
     browser.tabs.executeScript(active.id, {file: 'js/selector.js'});
-
-    browser.runtime.onMessage.addListener(onMessage);
   }).catch(console.error);
 };
 
 const disable = function () {
-  browser.runtime.onMessage.removeListener(onMessage);
+  if (active !== null) {
+    browser.tabs.sendMessage(active.id, {action: 'disable'});
 
-  browser.tabs.sendMessage(active.id, {action: 'disable'});
+    browser.tabs.removeCSS(active.id, {file: 'css/selector.css'});
 
-  browser.tabs.removeCSS(active.id, {file: 'css/selector.css'});
+    browser.browserAction.setIcon({
+      tabId: active.id,
+      path: {
+        '48': 'icons/logo.svg',
+        '96': 'icons/logo.svg'
+      }
+    });
 
-  browser.browserAction.setIcon({
-    tabId: active.id,
-    path: {
-      '48': 'icons/logo.svg',
-      '96': 'icons/logo.svg'
-    }
-  });
+    active = null;
+  }
+};
 
-  active = null;
-}
-
-const onMessage = function (message, sender) {
+browser.runtime.onMessage.addListener((message, sender) => {
   if (typeof sender.tab === 'object' && sender.tab.active === true && typeof message === 'object') {
     if (message.action === 'disable') {
       disable();
     }
+
+    if (message.action === 'action:show') {
+      browser.pageAction.show(sender.tab.id);
+
+      actions[sender.tab.id] = true;
+    }
   }
-}
+});
 
 browser.browserAction.onClicked.addListener(() => {
   if (active === null) {
@@ -53,6 +59,39 @@ browser.browserAction.onClicked.addListener(() => {
   } else {
     disable();
   }
+});
+
+browser.pageAction.onClicked.addListener((tab) => {
+  let action = null;
+  let icon   = null;
+  let title  = null;
+
+  if (actions[tab.id] === true) {
+    title  = 'Hide all spoilers';
+    icon   = 'icons/logo.svg';
+    action = 'spoilers:show';
+  } else {
+    title  = 'Show all spoilers';
+    icon   = 'icons/logo-enabled.svg';
+    action = 'spoilers:hide';
+  }
+console.log(title, icon, action);
+  actions[tab.id] = !actions[tab.id];
+
+  browser.pageAction.setTitle({
+    tabId: tab.id,
+    title: title
+  });
+
+  browser.pageAction.setIcon({
+    tabId: tab.id,
+    path:  {
+      '48': icon,
+      '96': icon
+    }
+  });
+
+  browser.tabs.sendMessage(tab.id, {action: action});
 });
 
 browser.tabs.onActivated.addListener((infos) => {

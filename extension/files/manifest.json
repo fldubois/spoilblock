@@ -27,6 +27,11 @@
     "default_title": "SpoilBlock"
   },
 
+  "page_action": {
+    "default_icon": "icons/logo-enabled.svg",
+    "default_title": "Show all spoilers"
+  },
+
   "background": {
     "scripts": ["js/background.js"]
   },
