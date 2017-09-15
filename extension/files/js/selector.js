@@ -36,6 +36,10 @@
   let target   = null;
   let selector = null;
 
+  const noop = () => {
+    return null;
+  };
+
   const handlers = {
     mouseover: (event) => {
       if (!elements.popup.classList.contains('visible')) {
@@ -111,6 +115,7 @@
         document.body.removeEventListener('mouseover', handlers.mouseover);
         document.body.removeEventListener('click', handlers.click, true);
         document.body.removeEventListener('keypress', handlers.keypress, true);
+        document.body.removeEventListener('dblclick', noop, true);
 
         browser.runtime.onMessage.removeListener(handlers.message);
       }
@@ -120,6 +125,7 @@
   document.body.addEventListener('mouseover', handlers.mouseover);
   document.body.addEventListener('click', handlers.click, true);
   document.body.addEventListener('keypress', handlers.keypress, true);
+  document.body.addEventListener('dblclick', noop, true);
 
   browser.runtime.onMessage.addListener(handlers.message);
 
