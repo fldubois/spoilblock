@@ -36,8 +36,9 @@
   let target   = null;
   let selector = null;
 
-  const noop = () => {
-    return null;
+  const stop = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
   };
 
   const handlers = {
@@ -65,7 +66,7 @@
       event.stopPropagation();
       event.preventDefault();
 
-      if (event.target === elements.report) {console.log('report');
+      if (event.target === elements.report) {
         var xhr = new XMLHttpRequest();
 
         xhr.open('POST', 'http://localhost:8080/spoilers', true);
@@ -115,7 +116,7 @@
         document.body.removeEventListener('mouseover', handlers.mouseover);
         document.body.removeEventListener('click', handlers.click, true);
         document.body.removeEventListener('keypress', handlers.keypress, true);
-        document.body.removeEventListener('dblclick', noop, true);
+        document.body.removeEventListener('dblclick', stop, true);
 
         browser.runtime.onMessage.removeListener(handlers.message);
       }
@@ -125,7 +126,7 @@
   document.body.addEventListener('mouseover', handlers.mouseover);
   document.body.addEventListener('click', handlers.click, true);
   document.body.addEventListener('keypress', handlers.keypress, true);
-  document.body.addEventListener('dblclick', noop, true);
+  document.body.addEventListener('dblclick', stop, true);
 
   browser.runtime.onMessage.addListener(handlers.message);
 
