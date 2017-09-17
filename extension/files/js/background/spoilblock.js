@@ -17,7 +17,7 @@ const enable = function () {
     });
 
     browser.tabs.insertCSS(active.id, {file: 'css/selector.css'});
-    browser.tabs.executeScript(active.id, {file: 'js/selector.js'});
+    browser.tabs.executeScript(active.id, {file: 'js/content/selector.js'});
   }).catch(console.error);
 };
 
@@ -54,11 +54,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
 });
 
 browser.browserAction.onClicked.addListener(() => {
-  if (active === null) {
-    enable();
-  } else {
-    disable();
-  }
+  return (active === null) ? enable() : disable();
 });
 
 browser.pageAction.onClicked.addListener((tab) => {
@@ -75,7 +71,7 @@ browser.pageAction.onClicked.addListener((tab) => {
     icon   = 'icons/logo-enabled.svg';
     action = 'spoilers:hide';
   }
-console.log(title, icon, action);
+
   actions[tab.id] = !actions[tab.id];
 
   browser.pageAction.setTitle({
@@ -101,5 +97,5 @@ browser.tabs.onActivated.addListener((infos) => {
 });
 
 browser.webNavigation.onCompleted.addListener(function (details) {
-  browser.tabs.executeScript(details.tabId, {file: 'js/mask.js'});
+  browser.tabs.executeScript(details.tabId, {file: 'js/content/mask.js'});
 });
