@@ -11,11 +11,11 @@
     <div id="spoilblock-select-box"></div>
     <div id="spoilblock-select-container">
       <div id="spoilblock-select-popup">
-        <h1>Report a spoiler</h1>
+        <h1>${browser.i18n.getMessage('reportTitle')}</h1>
         <pre id="spoilblock-select-popup-selector"></pre>
         <div>
-          <button id="spoilblock-select-popup-cancel">Cancel</button>
-          <button id="spoilblock-select-popup-report">Report</button>
+          <button id="spoilblock-select-popup-cancel">${browser.i18n.getMessage('reportCancel')}</button>
+          <button id="spoilblock-select-popup-report">${browser.i18n.getMessage('reportConfirm')}</button>
         </div>
       </div>
     </div>

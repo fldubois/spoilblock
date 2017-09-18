@@ -9,6 +9,8 @@
 
   "homepage_url": "https://github.com/fldubois/spoilblock",
 
+  "default_locale": "en",
+
   "icons": {
     "48": "icons/logo.svg",
     "96": "icons/logo.svg"

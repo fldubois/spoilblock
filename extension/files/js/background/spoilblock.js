@@ -63,11 +63,11 @@ browser.pageAction.onClicked.addListener((tab) => {
   let title  = null;
 
   if (actions[tab.id] === true) {
-    title  = 'Hide all spoilers';
+    title  = browser.i18n.getMessage('pageActionHide');
     icon   = 'icons/logo.svg';
     action = 'spoilers:show';
   } else {
-    title  = 'Show all spoilers';
+    title  = browser.i18n.getMessage('pageActionShow');
     icon   = 'icons/logo-enabled.svg';
     action = 'spoilers:hide';
   }
