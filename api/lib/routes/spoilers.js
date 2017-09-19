@@ -37,10 +37,19 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
+  const logger = req.logger.child({ns: 'spoilers'});
+
   if (!ajv.validate(schema, req.body)) {
+    const errors = ajv.errorsText(ajv.errors, {dataVar: 'Spoiler', separator: '|'}).split('|');
+
+    logger.error({
+      doc:    req.body,
+      errors: errors
+    }, 'Badly formatted spoiler');
+
     return res.status(400).json({
       error:    'ValidationError',
-      messages: ajv.errors.map((error) => error.message)
+      messages: errors
     });
   }
 
@@ -51,7 +60,7 @@ router.post('/', function (req, res) {
     }
   }).then(function (result) {
     if (result.docs.length > 0) {
-      req.logger.info({ns: 'spoilers', doc: req.body}, 'Spoiler conflict');
+      logger.error({doc: req.body}, 'Spoiler conflict');
 
       return res.status(409).json({
         error:   'Conflict',
@@ -62,7 +71,7 @@ router.post('/', function (req, res) {
     const doc = Object.assign({_id: uuid.v4()}, req.body);
 
     return db.put(doc).then((result) => {
-      req.logger.info({ns: 'spoilers', doc: doc}, 'Spoiler created');
+      logger.info({doc: doc}, 'Spoiler created');
 
       return res.status(200).json(doc);
     });

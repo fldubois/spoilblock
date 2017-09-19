@@ -1,5 +1,7 @@
 'use strict';
 
+const http = require('http');
+
 const config     = require('config');
 const express    = require('express');
 const onFinished = require('on-finished');
@@ -18,14 +20,26 @@ const app = express();
 app.use(middlewares.bodyParser.json());
 
 app.use((req, res, next) => {
+  const start = Date.now();
+
   req.logger = logger.child({req_id: uuid.v4()});
 
-  req.logger.info({req: req});
+  req.logger.info({
+    event:  'request',
+    req:    req,
+    params: req.params,
+    query:  req.query
+  }, `${req.method.toUpperCase()} ${req.originalUrl}`);
 
   onFinished(res, () => {
     const level = (res.statusCode < 400) ? 'info' : 'error';
 
-    req.logger[level]({res: res});
+    req.logger[level]({
+      event:        'response',
+      res:          res,
+      status:       res.statusCode,
+      responseTime: Date.now() - start
+    }, `${req.method.toUpperCase()} ${req.originalUrl} - ${res.statusCode} ${http.STATUS_CODES[res.statusCode]}`);
   });
 
   next();
