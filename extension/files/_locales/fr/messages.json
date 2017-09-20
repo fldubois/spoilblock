@@ -1,0 +1,28 @@
+{
+
+  "pageActionHide": {
+    "message": "Cacher tous les spoilers",
+    "description": "Page action title when spoilers are displayed."
+  },
+
+  "pageActionShow": {
+    "message": "Afficher tous les spoilers",
+    "description": "Page action title when spoilers are hidden."
+  },
+
+  "reportTitle": {
+    "message": "Signaler un spoiler",
+    "description": "Report form title"
+  },
+
+  "reportConfirm": {
+    "message": "Signaler",
+    "description": "Report form confirm button text"
+  },
+
+  "reportCancel": {
+    "message": "Annuler",
+    "description": "Report form cancel button text"
+  }
+
+}
