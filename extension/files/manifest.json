@@ -26,7 +26,8 @@
 
   "browser_action": {
     "default_icon": "icons/logo.svg",
-    "default_title": "SpoilBlock"
+    "default_title": "SpoilBlock",
+    "default_popup": "html/popup.html"
   },
 
   "page_action": {

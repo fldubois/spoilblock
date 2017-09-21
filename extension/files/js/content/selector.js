@@ -1,6 +1,12 @@
 'use strict';
 
 {
+  // Set focus
+
+  document.body.setAttribute('tabindex', 0);
+  document.body.focus();
+  document.body.removeAttribute('tabindex');
+
   // DOM structure
 
   const layer = document.createElement('div');
@@ -33,8 +39,8 @@
 
   // Event handlers
 
-  let target   = null;
   let selector = null;
+  let target   = null;
 
   const stop = (event) => {
     event.stopPropagation();
@@ -44,7 +50,7 @@
   const handlers = {
     mouseover: (event) => {
       if (!elements.popup.classList.contains('visible')) {
-        target  = event.target;
+        target = event.target;
 
         let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
 
@@ -80,13 +86,13 @@
             console.log('Fail to create spoiler, API returned status ', xhr.status);
           }
 
-          browser.runtime.sendMessage({action: 'disable'});
+          browser.runtime.sendMessage({action: 'selector:disable'});
         });
 
         xhr.addEventListener('error', (event) => {
           console.log('API call error');
 
-          browser.runtime.sendMessage({action: 'disable'});
+          browser.runtime.sendMessage({action: 'selector:disable'});
         });
 
         xhr.send(JSON.stringify({
@@ -106,11 +112,11 @@
     },
     keypress: (event) => {
       if (event.key === 'Escape') {
-        browser.runtime.sendMessage({action: 'disable'});
+        browser.runtime.sendMessage({action: 'selector:disable'});
       }
     },
     message: (message) => {
-      if (typeof message === 'object' && message.action === 'disable') {
+      if (typeof message === 'object' && message.action === 'selector:disable') {
         document.body.removeChild(layer);
 
         document.body.removeEventListener('mouseover', handlers.mouseover);

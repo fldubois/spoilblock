@@ -5,25 +5,27 @@ let active = null;
 const actions = {}
 
 const enable = function () {
-  browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-    active = tabs.pop();
+  if (active === null) {
+    browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+      active = tabs.pop();
 
-    browser.browserAction.setIcon({
-      tabId: active.id,
-      path: {
-        '48': 'icons/logo-enabled.svg',
-        '96': 'icons/logo-enabled.svg'
-      }
-    });
+      browser.browserAction.setIcon({
+        tabId: active.id,
+        path: {
+          '48': 'icons/logo-enabled.svg',
+          '96': 'icons/logo-enabled.svg'
+        }
+      });
 
-    browser.tabs.insertCSS(active.id, {file: 'css/selector.css'});
-    browser.tabs.executeScript(active.id, {file: 'js/content/selector.js'});
-  }).catch(console.error);
+      browser.tabs.insertCSS(active.id, {file: 'css/selector.css'});
+      browser.tabs.executeScript(active.id, {file: 'js/content/selector.js'});
+    }).catch(console.error);
+  }
 };
 
 const disable = function () {
   if (active !== null) {
-    browser.tabs.sendMessage(active.id, {action: 'disable'});
+    browser.tabs.sendMessage(active.id, {action: 'selector:disable'});
 
     browser.tabs.removeCSS(active.id, {file: 'css/selector.css'});
 
@@ -40,21 +42,21 @@ const disable = function () {
 };
 
 browser.runtime.onMessage.addListener((message, sender) => {
-  if (typeof sender.tab === 'object' && sender.tab.active === true && typeof message === 'object') {
-    if (message.action === 'disable') {
+  if (typeof message === 'object') {
+    if (message.action === 'selector:enable') {
+      enable();
+    }
+
+    if (message.action === 'selector:disable') {
       disable();
     }
 
-    if (message.action === 'action:show') {
+    if (message.action === 'action:show' && typeof sender.tab === 'object' && sender.tab.active === true) {
       browser.pageAction.show(sender.tab.id);
 
       actions[sender.tab.id] = true;
     }
   }
-});
-
-browser.browserAction.onClicked.addListener(() => {
-  return (active === null) ? enable() : disable();
 });
 
 browser.pageAction.onClicked.addListener((tab) => {
