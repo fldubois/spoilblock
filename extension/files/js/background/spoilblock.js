@@ -56,6 +56,14 @@ browser.runtime.onMessage.addListener((message, sender) => {
 
       actions[sender.tab.id] = true;
     }
+
+    if (message.action === 'selector:capture') {
+      browser.tabs.captureVisibleTab().then((dataUrl) => {
+        browser.tabs.sendMessage(active.id, {action: 'selector:preview', dataUrl: dataUrl});
+      }).catch((error) => {
+        console.error(error);
+      });
+    }
   }
 });
 

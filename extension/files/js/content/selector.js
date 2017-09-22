@@ -18,6 +18,9 @@
     <div id="spoilblock-select-container">
       <div id="spoilblock-select-popup">
         <h1>${browser.i18n.getMessage('reportTitle')}</h1>
+        <canvas id="spoilblock-select-popup-preview" width="0" height="0">
+          Spoiler preview
+        </canvas>
         <pre id="spoilblock-select-popup-selector"></pre>
         <div>
           <button id="spoilblock-select-popup-cancel">${browser.i18n.getMessage('reportCancel')}</button>
@@ -32,6 +35,7 @@
   const elements = {
     box:      layer.querySelector('#spoilblock-select-box'),
     popup:    layer.querySelector('#spoilblock-select-popup'),
+    preview:  layer.querySelector('#spoilblock-select-popup-preview'),
     selector: layer.querySelector('#spoilblock-select-popup-selector'),
     cancel:   layer.querySelector('#spoilblock-select-popup-cancel'),
     report:   layer.querySelector('#spoilblock-select-popup-report')
@@ -49,7 +53,7 @@
 
   const handlers = {
     mouseover: (event) => {
-      if (!elements.popup.classList.contains('visible')) {
+      if (selector === null) {
         target = event.target;
 
         let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
@@ -102,12 +106,14 @@
         }));
       } else if (event.target === elements.cancel) {
         elements.popup.classList.remove('visible');
+
+        selector = null;
       } else {
         selector = createSelector(target);
 
-        elements.selector.innerText = selector;
+        layer.style.visibility = 'hidden';
 
-        elements.popup.classList.add('visible');
+        browser.runtime.sendMessage({action: 'selector:capture'});
       }
     },
     keypress: (event) => {
@@ -116,15 +122,47 @@
       }
     },
     message: (message) => {
-      if (typeof message === 'object' && message.action === 'selector:disable') {
-        document.body.removeChild(layer);
+      if (typeof message === 'object') {
+        if (message.action === 'selector:disable') {
+          document.body.removeChild(layer);
 
-        document.body.removeEventListener('mouseover', handlers.mouseover);
-        document.body.removeEventListener('click', handlers.click, true);
-        document.body.removeEventListener('keypress', handlers.keypress, true);
-        document.body.removeEventListener('dblclick', stop, true);
+          document.body.removeEventListener('mouseover', handlers.mouseover);
+          document.body.removeEventListener('click', handlers.click, true);
+          document.body.removeEventListener('keypress', handlers.keypress, true);
+          document.body.removeEventListener('dblclick', stop, true);
 
-        browser.runtime.onMessage.removeListener(handlers.message);
+          browser.runtime.onMessage.removeListener(handlers.message);
+        } else if (message.action === 'selector:preview') {
+          layer.style.visibility = 'visible';
+
+          const img  = document.createElement('img');
+          const rect = target.getBoundingClientRect();
+
+          img.src = message.dataUrl;
+
+          const x = (window.scrollX + rect.left);
+          const y = (window.scrollY + rect.top);
+          const w = rect.width;
+          const h = rect.height;
+
+          img.onload = function () {
+            window.createImageBitmap(this, x, y, w, h).then((bitmap) => {
+              elements.preview.setAttribute('width',  rect.width);
+              elements.preview.setAttribute('height', rect.height);
+
+              var ctx = elements.preview.getContext('2d');
+
+              ctx.drawImage(bitmap, 0, 0);
+
+              elements.selector.innerText = selector;
+
+              elements.popup.classList.add('visible');
+            }).catch((error) => {
+              console.error(error);
+            });
+          }
+
+        }
       }
     }
   }
