@@ -140,19 +140,14 @@
 
           img.src = message.dataUrl;
 
-          const x = (window.scrollX + rect.left);
-          const y = (window.scrollY + rect.top);
-          const w = rect.width;
-          const h = rect.height;
-
           img.onload = function () {
-            window.createImageBitmap(this, x, y, w, h).then((bitmap) => {
+            window.createImageBitmap(this, rect.left, rect.top, rect.width, rect.height).then((bitmap) => {
               elements.preview.setAttribute('width',  rect.width);
               elements.preview.setAttribute('height', rect.height);
 
               var ctx = elements.preview.getContext('2d');
 
-              ctx.drawImage(bitmap, 0, 0);
+              ctx.drawImage(bitmap, 0, 0, rect.width, rect.height);
 
               elements.selector.innerText = selector;
 
