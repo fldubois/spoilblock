@@ -107,5 +107,9 @@ browser.tabs.onActivated.addListener((infos) => {
 });
 
 browser.webNavigation.onCompleted.addListener(function (details) {
+  if (active !== null && details.tabId === active.id) {
+    disable();
+  }
+
   browser.tabs.executeScript(details.tabId, {file: 'js/content/mask.js'});
 });
