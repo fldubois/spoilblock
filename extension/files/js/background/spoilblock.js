@@ -113,3 +113,21 @@ browser.webNavigation.onCompleted.addListener(function (details) {
 
   browser.tabs.executeScript(details.tabId, {file: 'js/content/mask.js'});
 });
+
+
+browser.webRequest.onBeforeRequest.addListener(function (details) {
+  if (details.type === 'main_frame' && details.method === 'GET') {
+    const url = new URL(details.url);
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('GET', `http://localhost:8080/spoilers?domain=${url.hostname}`, false);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.send(null);
+
+    if (xhr.status === 200) {
+      const spoilers = JSON.parse(xhr.responseText);
+
+      return browser.storage.local.set({[url.hostname]: spoilers});
+    };
+  }
+}, {urls:['<all_urls>']}, ['blocking']);

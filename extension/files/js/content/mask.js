@@ -2,14 +2,8 @@
 
 const elements = [];
 
-const xhr = new XMLHttpRequest();
-
-xhr.open('GET', `http://localhost:8080/spoilers?domain=${window.location.hostname}`, false);
-xhr.setRequestHeader('Content-type', 'application/json');
-xhr.send(null);
-
-if (xhr.status === 200) {
-  const spoilers = JSON.parse(xhr.responseText);
+browser.storage.local.get(window.location.hostname).then((data) => {
+  const spoilers = data[window.location.hostname];
 
   if (spoilers.length > 0) {
     spoilers.forEach((spoiler) => {
@@ -45,7 +39,4 @@ if (xhr.status === 200) {
 
     browser.runtime.sendMessage({action: 'action:show'});
   }
-
-} else {
-  console.log('Fail to retrieve spoilers, API returned status ', xhr.status);
-}
+})

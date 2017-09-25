@@ -20,7 +20,10 @@
 
   "permissions": [
     "activeTab",
+    "storage",
     "webNavigation",
+    "webRequest",
+    "webRequestBlocking",
     "<all_urls>"
   ],
 
