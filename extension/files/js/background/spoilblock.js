@@ -23,8 +23,8 @@ const enable = function () {
   }
 };
 
-const disable = function () {
-  if (active !== null) {
+const disable = function (event) {
+  if (active !== null && (typeof event === 'undefined' || event.tabId === active.id)) {
     browser.tabs.sendMessage(active.id, {action: 'selector:disable'});
 
     browser.tabs.removeCSS(active.id, {file: 'css/selector.css'});
@@ -43,26 +43,27 @@ const disable = function () {
 
 browser.runtime.onMessage.addListener((message, sender) => {
   if (typeof message === 'object') {
-    if (message.action === 'selector:enable') {
-      enable();
-    }
+    switch (message.action) {
+      case 'selector:enable':
+        enable();
+        break;
+      case 'selector:disable':
+        disable();
+        break;
+      case 'action:show':
+        if (typeof sender.tab === 'object' && sender.tab.active === true) {
+          browser.pageAction.show(sender.tab.id);
 
-    if (message.action === 'selector:disable') {
-      disable();
-    }
-
-    if (message.action === 'action:show' && typeof sender.tab === 'object' && sender.tab.active === true) {
-      browser.pageAction.show(sender.tab.id);
-
-      actions[sender.tab.id] = true;
-    }
-
-    if (message.action === 'selector:capture') {
-      browser.tabs.captureVisibleTab().then((dataUrl) => {
-        browser.tabs.sendMessage(active.id, {action: 'selector:preview', dataUrl: dataUrl});
-      }).catch((error) => {
-        console.error(error);
-      });
+          actions[sender.tab.id] = true;
+        }
+        break;
+      case 'selector:capture':
+        browser.tabs.captureVisibleTab().then((dataUrl) => {
+          browser.tabs.sendMessage(active.id, {action: 'selector:preview', dataUrl: dataUrl});
+        }).catch((error) => {
+          console.error(error);
+        });
+        break;
     }
   }
 });
@@ -100,20 +101,8 @@ browser.pageAction.onClicked.addListener((tab) => {
   browser.tabs.sendMessage(tab.id, {action: action});
 });
 
-browser.tabs.onActivated.addListener((infos) => {
-  if (active !== null && infos.tabId !== active.id) {
-    disable();
-  }
-});
-
-browser.webNavigation.onCompleted.addListener(function (details) {
-  if (active !== null && details.tabId === active.id) {
-    disable();
-  }
-
-  browser.tabs.executeScript(details.tabId, {file: 'js/content/mask.js'});
-});
-
+browser.tabs.onActivated.addListener(disable);
+browser.webNavigation.onBeforeNavigate.addListener(disable);
 
 browser.webRequest.onBeforeRequest.addListener(function (details) {
   if (details.type === 'main_frame' && details.method === 'GET') {

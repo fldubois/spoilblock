@@ -13,12 +13,12 @@ browser.storage.local.get(window.location.hostname).then((data) => {
         element.classList.add('spoilblock-masked');
 
         element.addEventListener('dblclick', function listener(event) {
-          event.stopPropagation();
-          event.preventDefault();
+          if (element.classList.contains('spoilblock-masked')) {
+            event.stopPropagation();
+            event.preventDefault();
 
-          element.classList.remove('spoilblock-masked');
-
-          element.removeEventListener('dblclick', listener, true)
+            element.classList.remove('spoilblock-masked');
+          }
         }, true);
 
         elements.push(element);
@@ -27,13 +27,18 @@ browser.storage.local.get(window.location.hostname).then((data) => {
 
     browser.runtime.onMessage.addListener((message) => {
       if (typeof message === 'object') {
-        elements.forEach((element) => {
-          if (message.action === 'spoilers:hide' && !element.classList.contains('spoilblock-masked')) {
-            element.classList.add('spoilblock-masked');
-          } else if (message.action === 'spoilers:show' && element.classList.contains('spoilblock-masked')) {
-            element.classList.remove('spoilblock-masked');
-          }
-        });
+        switch (message.action) {
+          case 'spoilers:hide':
+            elements.filter((element) => !element.classList.contains('spoilblock-masked')).forEach((element) => {
+              element.classList.add('spoilblock-masked');
+            });
+            break;
+          case 'spoilers:show':
+            elements.filter((element) => element.classList.contains('spoilblock-masked')).forEach((element) => {
+              element.classList.remove('spoilblock-masked');
+            });
+            break;
+        }
       }
     });
 
