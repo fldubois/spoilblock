@@ -41,6 +41,8 @@
     report:   layer.querySelector('#spoilblock-select-popup-report')
   };
 
+  const ctx = elements.preview.getContext('2d');
+
   // Event handlers
 
   let selector = null;
@@ -77,35 +79,48 @@
       event.preventDefault();
 
       if (event.target === elements.report) {
-        var xhr = new XMLHttpRequest();
-
-        xhr.open('POST', 'http://localhost:8080/spoilers', true);
-
-        xhr.setRequestHeader('Content-type', 'application/json');
-
-        xhr.addEventListener('load', () => {
-          if (xhr.status === 200) {
-            console.log('Spoiler created', JSON.parse(xhr.responseText));
+        fetch('http://localhost:8080/spoilers', {
+          method: 'POST',
+          headers: {
+            'Accept':       'application/json',
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            domain:   window.location.hostname,
+            url:      window.location.href,
+            selector: selector
+          })
+        }).then((response) => {
+          if (response.ok) {
+            return response.json().then((body) => {
+              console.log('Spoiler created', body);
+            });
           } else {
-            console.log('Fail to create spoiler, API returned status ', xhr.status);
+            console.log('Fail to create spoiler, API returned status ', response.status);
           }
+        }).catch((error) => {
+          console.error(error);
+        }).then(() => {
+          ctx.clearRect(0, 0, elements.preview.width, elements.preview.height);
+
+          elements.preview.setAttribute('width',  0);
+          elements.preview.setAttribute('height', 0);
+
+          elements.selector.innerText = '';
+
+          selector = null;
 
           browser.runtime.sendMessage({action: 'selector:disable'});
         });
-
-        xhr.addEventListener('error', (event) => {
-          console.log('API call error');
-
-          browser.runtime.sendMessage({action: 'selector:disable'});
-        });
-
-        xhr.send(JSON.stringify({
-          domain:   window.location.hostname,
-          url:      window.location.href,
-          selector: selector
-        }));
       } else if (event.target === elements.cancel) {
         elements.popup.classList.remove('visible');
+
+        ctx.clearRect(0, 0, elements.preview.width, elements.preview.height);
+
+        elements.preview.setAttribute('width',  0);
+        elements.preview.setAttribute('height', 0);
+
+        elements.selector.innerText = '';
 
         selector = null;
       } else {
@@ -144,8 +159,6 @@
             window.createImageBitmap(this, rect.left, rect.top, rect.width, rect.height).then((bitmap) => {
               elements.preview.setAttribute('width',  rect.width);
               elements.preview.setAttribute('height', rect.height);
-
-              var ctx = elements.preview.getContext('2d');
 
               ctx.drawImage(bitmap, 0, 0, rect.width, rect.height);
 
