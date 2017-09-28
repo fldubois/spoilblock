@@ -15,33 +15,13 @@
 
   layer.innerHTML = `
     <div id="spoilblock-select-box"></div>
-    <div id="spoilblock-select-container">
-      <div id="spoilblock-select-popup">
-        <h1>${browser.i18n.getMessage('reportTitle')}</h1>
-        <canvas id="spoilblock-select-popup-preview" width="0" height="0">
-          Spoiler preview
-        </canvas>
-        <pre id="spoilblock-select-popup-selector"></pre>
-        <div>
-          <button id="spoilblock-select-popup-cancel">${browser.i18n.getMessage('reportCancel')}</button>
-          <button id="spoilblock-select-popup-report">${browser.i18n.getMessage('reportConfirm')}</button>
-        </div>
-      </div>
-    </div>
   `;
 
   document.body.appendChild(layer);
 
   const elements = {
-    box:      layer.querySelector('#spoilblock-select-box'),
-    popup:    layer.querySelector('#spoilblock-select-popup'),
-    preview:  layer.querySelector('#spoilblock-select-popup-preview'),
-    selector: layer.querySelector('#spoilblock-select-popup-selector'),
-    cancel:   layer.querySelector('#spoilblock-select-popup-cancel'),
-    report:   layer.querySelector('#spoilblock-select-popup-report')
+    box: layer.querySelector('#spoilblock-select-box')
   };
-
-  const ctx = elements.preview.getContext('2d');
 
   // Event handlers
 
@@ -78,57 +58,25 @@
       event.stopPropagation();
       event.preventDefault();
 
-      if (event.target === elements.report) {
-        fetch('http://localhost:8080/spoilers', {
-          method: 'POST',
-          headers: {
-            'Accept':       'application/json',
-            'Content-type': 'application/json'
-          },
-          body: JSON.stringify({
-            domain:   window.location.hostname,
-            url:      window.location.href,
-            selector: selector
-          })
-        }).then((response) => {
-          if (response.ok) {
-            return response.json().then((body) => {
-              console.log('Spoiler created', body);
-            });
-          } else {
-            console.log('Fail to create spoiler, API returned status ', response.status);
-          }
-        }).catch((error) => {
-          console.error(error);
-        }).then(() => {
-          ctx.clearRect(0, 0, elements.preview.width, elements.preview.height);
-
-          elements.preview.setAttribute('width',  0);
-          elements.preview.setAttribute('height', 0);
-
-          elements.selector.innerText = '';
-
-          selector = null;
-
-          browser.runtime.sendMessage({action: 'selector:disable'});
-        });
-      } else if (event.target === elements.cancel) {
-        elements.popup.classList.remove('visible');
-
-        ctx.clearRect(0, 0, elements.preview.width, elements.preview.height);
-
-        elements.preview.setAttribute('width',  0);
-        elements.preview.setAttribute('height', 0);
-
-        elements.selector.innerText = '';
-
-        selector = null;
-      } else {
+      if (selector === null) {
         selector = createSelector(target);
 
         layer.style.visibility = 'hidden';
 
-        browser.runtime.sendMessage({action: 'selector:capture'});
+        const rect = target.getBoundingClientRect();
+
+        browser.runtime.sendMessage({
+          action:   'selector:capture',
+          selector: selector,
+          rect:     {
+            left:   Math.ceil(rect.left),
+            top:    Math.ceil(rect.top),
+            width:  Math.ceil(rect.width),
+            height: Math.ceil(rect.height)
+          }
+        }).then(() => {
+          layer.style.visibility = 'visible';
+        });
       }
     },
     keypress: (event) => {
@@ -138,7 +86,34 @@
     },
     message: (message) => {
       if (typeof message === 'object') {
-        if (message.action === 'selector:disable') {
+        if (message.action === 'selector:report') {
+          fetch('http://localhost:8080/spoilers', {
+            method: 'POST',
+            headers: {
+              'Accept':       'application/json',
+              'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              domain:   window.location.hostname,
+              url:      window.location.href,
+              selector: selector
+            })
+          }).then((response) => {
+            if (response.ok) {
+              return response.json().then((body) => {
+                console.log('Spoiler created', body);
+              });
+            } else {
+              console.log('Fail to create spoiler, API returned status ', response.status);
+            }
+          }).catch((error) => {
+            console.error(error);
+          }).then(() => {
+            browser.runtime.sendMessage({action: 'selector:disable'});
+          });
+        } else if (message.action === 'selector:cancel') {
+          selector = null;
+        } else if (message.action === 'selector:disable') {
           document.body.removeChild(layer);
 
           document.body.removeEventListener('mouseover', handlers.mouseover);
@@ -147,29 +122,6 @@
           document.body.removeEventListener('dblclick', stop, true);
 
           browser.runtime.onMessage.removeListener(handlers.message);
-        } else if (message.action === 'selector:preview') {
-          layer.style.visibility = 'visible';
-
-          const img  = document.createElement('img');
-          const rect = target.getBoundingClientRect();
-
-          img.src = message.dataUrl;
-
-          img.onload = function () {
-            window.createImageBitmap(this, rect.left, rect.top, rect.width, rect.height).then((bitmap) => {
-              elements.preview.setAttribute('width',  rect.width);
-              elements.preview.setAttribute('height', rect.height);
-
-              ctx.drawImage(bitmap, 0, 0, rect.width, rect.height);
-
-              elements.selector.innerText = selector;
-
-              elements.popup.classList.add('visible');
-            }).catch((error) => {
-              console.error(error);
-            });
-          }
-
         }
       }
     }

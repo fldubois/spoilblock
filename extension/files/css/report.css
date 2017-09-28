@@ -1,0 +1,81 @@
+/* button reset */
+
+button {
+  overflow: visible;
+
+  padding: 0;
+
+  border: 0;
+
+  background: none;
+
+  color: inherit;
+
+  font: inherit;
+  line-height: normal;
+
+  cursor: default;
+
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
+
+button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+/* spoilblock styles */
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  width: -moz-fit-content;
+
+  margin: 0;
+  padding: 0.4rem;
+
+  background-color: #393f4c;
+
+  font-family: 'Open Sans Light';
+}
+
+h1 {
+  margin: 0 0 1rem 0;
+
+  color: #8fa1b2;
+
+  font-size: 2rem;
+
+  text-shadow: none;
+}
+
+div {
+  text-align: right;
+}
+
+pre {
+  color: #757873;
+
+  font-family: 'Consolas','monaco','monospace';
+  font-size: 1rem;
+}
+
+button {
+  margin: 0.25rem;
+
+  color: #46afe3;
+
+  font-size: 1.2rem;
+  font-weight: bold;
+
+  cursor: pointer;
+}

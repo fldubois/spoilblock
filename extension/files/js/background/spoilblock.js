@@ -41,7 +41,7 @@ const disable = function (event) {
   }
 };
 
-browser.runtime.onMessage.addListener((message, sender) => {
+browser.runtime.onMessage.addListener((message, sender, reply) => {
   if (typeof message === 'object') {
     switch (message.action) {
       case 'selector:enable':
@@ -59,10 +59,47 @@ browser.runtime.onMessage.addListener((message, sender) => {
         break;
       case 'selector:capture':
         browser.tabs.captureVisibleTab().then((dataUrl) => {
-          browser.tabs.sendMessage(active.id, {action: 'selector:preview', dataUrl: dataUrl});
+          reply();
+
+          return browser.windows.create({
+            url:    browser.extension.getURL('html/report.html'),
+            type:   'popup',
+            width:  message.rect.width,
+            height: message.rect.height
+          }).then((window) => {
+            const tabId = window.tabs[0].id;
+
+            const handler = (details) => {
+              if (details.tabId === tabId) {
+                browser.tabs.sendMessage(tabId, {
+                  action:   'report:show',
+                  dataUrl:  dataUrl,
+                  selector: message.selector,
+                  rect:     message.rect
+                }).then((response) => {
+                  browser.windows.update(window.id, {
+                    width:  response.width  + 1,
+                    height: response.height + 1
+                  });
+                });
+
+                browser.webNavigation.onCompleted.removeListener(handler);
+              }
+            };
+
+            browser.webNavigation.onCompleted.addListener(handler);
+
+          });
         }).catch((error) => {
           console.error(error);
         });
+
+        return true;
+      case 'report:validate':
+        browser.tabs.sendMessage(active.id, {action: 'selector:report'});
+        break;
+      case 'report:cancel':
+        browser.tabs.sendMessage(active.id, {action: 'selector:cancel'});
         break;
     }
   }
