@@ -1,145 +1,157 @@
 'use strict';
 
-let active = null;
+const selector = {
+  tab: null,
 
-const actions = {}
+  enable: function () {
+    if (selector.tab === null) {
+      browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+        selector.tab = tabs.pop();
 
-const enable = function () {
-  if (active === null) {
-    browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-      active = tabs.pop();
+        browser.browserAction.setIcon({
+          tabId: selector.tab.id,
+          path: {
+            '48': 'icons/logo-enabled.svg',
+            '96': 'icons/logo-enabled.svg'
+          }
+        });
+
+        browser.tabs.insertCSS(selector.tab.id, {file: 'css/selector.css'});
+        browser.tabs.executeScript(selector.tab.id, {file: 'js/content/selector.js'});
+      }).catch(console.error);
+    }
+  },
+
+  disable: function (event) {
+    if (selector.tab !== null && (typeof event === 'undefined' || event.tabId === selector.tab.id)) {
+      browser.tabs.sendMessage(selector.tab.id, {action: 'selector:disable'});
+
+      browser.tabs.removeCSS(selector.tab.id, {file: 'css/selector.css'});
 
       browser.browserAction.setIcon({
-        tabId: active.id,
+        tabId: selector.tab.id,
         path: {
-          '48': 'icons/logo-enabled.svg',
-          '96': 'icons/logo-enabled.svg'
+          '48': 'icons/logo.svg',
+          '96': 'icons/logo.svg'
         }
       });
 
-      browser.tabs.insertCSS(active.id, {file: 'css/selector.css'});
-      browser.tabs.executeScript(active.id, {file: 'js/content/selector.js'});
-    }).catch(console.error);
+      selector.tab = null;
+    }
+  },
+
+  capture: function (selector, rect) {
+    return browser.tabs.captureVisibleTab().then((dataUrl) => {
+      report.show(dataUrl, selector, rect)
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 };
 
-const disable = function (event) {
-  if (active !== null && (typeof event === 'undefined' || event.tabId === active.id)) {
-    browser.tabs.sendMessage(active.id, {action: 'selector:disable'});
+const report = {
+  show: function (dataUrl, selector, rect) {
+    browser.windows.create({
+      url:    browser.extension.getURL('html/report.html'),
+      type:   'popup',
+      width:  rect.width,
+      height: rect.height
+    }).then((window) => {
+      const tabId = window.tabs[0].id;
 
-    browser.tabs.removeCSS(active.id, {file: 'css/selector.css'});
+      const handler = (details) => {
+        if (details.tabId === tabId) {
+          browser.tabs.sendMessage(tabId, {
+            action:   'report:show',
+            dataUrl:  dataUrl,
+            selector: selector,
+            rect:     rect
+          }).then((response) => {
+            browser.windows.update(window.id, {
+              width:  response.width  + 1,
+              height: response.height + 1
+            });
+          });
 
-    browser.browserAction.setIcon({
-      tabId: active.id,
-      path: {
-        '48': 'icons/logo.svg',
-        '96': 'icons/logo.svg'
+          browser.webNavigation.onCompleted.removeListener(handler);
+        }
+      };
+
+      browser.webNavigation.onCompleted.addListener(handler);
+    });
+  },
+
+  validate: function () {
+    browser.tabs.sendMessage(selector.tab.id, {action: 'selector:report'});
+  },
+
+  cancel: function () {
+    browser.tabs.sendMessage(selector.tab.id, {action: 'selector:cancel'});
+  }
+};
+
+const action = {
+  states: [],
+
+  show: function (tab) {
+    if (typeof tab === 'object' && tab.active === true) {
+      browser.pageAction.show(tab.id);
+
+      action.states[tab.id] = true;
+    }
+  },
+
+  onClick: function (tab) {
+    let action = null;
+    let icon   = null;
+    let title  = null;
+
+    if (action.states[tab.id] === true) {
+      title  = browser.i18n.getMessage('pageActionHide');
+      icon   = 'icons/logo.svg';
+      action = 'spoilers:show';
+    } else {
+      title  = browser.i18n.getMessage('pageActionShow');
+      icon   = 'icons/logo-enabled.svg';
+      action = 'spoilers:hide';
+    }
+
+    action.states[tab.id] = !action.states[tab.id];
+
+    browser.pageAction.setTitle({
+      tabId: tab.id,
+      title: title
+    });
+
+    browser.pageAction.setIcon({
+      tabId: tab.id,
+      path:  {
+        '48': icon,
+        '96': icon
       }
     });
 
-    active = null;
+    browser.tabs.sendMessage(tab.id, {action: action});
   }
 };
 
 browser.runtime.onMessage.addListener((message, sender, reply) => {
   if (typeof message === 'object') {
     switch (message.action) {
-      case 'selector:enable':
-        enable();
-        break;
-      case 'selector:disable':
-        disable();
-        break;
-      case 'action:show':
-        if (typeof sender.tab === 'object' && sender.tab.active === true) {
-          browser.pageAction.show(sender.tab.id);
-
-          actions[sender.tab.id] = true;
-        }
-        break;
-      case 'selector:capture':
-        browser.tabs.captureVisibleTab().then((dataUrl) => {
-          reply();
-
-          return browser.windows.create({
-            url:    browser.extension.getURL('html/report.html'),
-            type:   'popup',
-            width:  message.rect.width,
-            height: message.rect.height
-          }).then((window) => {
-            const tabId = window.tabs[0].id;
-
-            const handler = (details) => {
-              if (details.tabId === tabId) {
-                browser.tabs.sendMessage(tabId, {
-                  action:   'report:show',
-                  dataUrl:  dataUrl,
-                  selector: message.selector,
-                  rect:     message.rect
-                }).then((response) => {
-                  browser.windows.update(window.id, {
-                    width:  response.width  + 1,
-                    height: response.height + 1
-                  });
-                });
-
-                browser.webNavigation.onCompleted.removeListener(handler);
-              }
-            };
-
-            browser.webNavigation.onCompleted.addListener(handler);
-
-          });
-        }).catch((error) => {
-          console.error(error);
-        });
-
-        return true;
-      case 'report:validate':
-        browser.tabs.sendMessage(active.id, {action: 'selector:report'});
-        break;
-      case 'report:cancel':
-        browser.tabs.sendMessage(active.id, {action: 'selector:cancel'});
-        break;
+      case 'selector:enable':  return selector.enable();
+      case 'selector:disable': return selector.disable();
+      case 'selector:capture': return selector.capture(message.selector, message.rect);
+      case 'action:show':      return active.show(sender.tab);
+      case 'report:validate':  return report.validate();
+      case 'report:cancel':    return report.cancel();
     }
   }
 });
 
-browser.pageAction.onClicked.addListener((tab) => {
-  let action = null;
-  let icon   = null;
-  let title  = null;
+browser.pageAction.onClicked.addListener(action.onClick);
 
-  if (actions[tab.id] === true) {
-    title  = browser.i18n.getMessage('pageActionHide');
-    icon   = 'icons/logo.svg';
-    action = 'spoilers:show';
-  } else {
-    title  = browser.i18n.getMessage('pageActionShow');
-    icon   = 'icons/logo-enabled.svg';
-    action = 'spoilers:hide';
-  }
-
-  actions[tab.id] = !actions[tab.id];
-
-  browser.pageAction.setTitle({
-    tabId: tab.id,
-    title: title
-  });
-
-  browser.pageAction.setIcon({
-    tabId: tab.id,
-    path:  {
-      '48': icon,
-      '96': icon
-    }
-  });
-
-  browser.tabs.sendMessage(tab.id, {action: action});
-});
-
-browser.tabs.onActivated.addListener(disable);
-browser.webNavigation.onBeforeNavigate.addListener(disable);
+browser.tabs.onActivated.addListener(selector.disable);
+browser.webNavigation.onBeforeNavigate.addListener(selector.disable);
 
 browser.webRequest.onBeforeRequest.addListener(function (details) {
   if (details.type === 'main_frame' && details.method === 'GET') {
