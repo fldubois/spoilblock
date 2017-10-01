@@ -1,64 +1,89 @@
 /* button reset */
 
 button {
-    overflow: visible;
+  overflow: visible;
 
-    padding: 0;
+  padding: 0;
 
-    border: 0;
+  border: 0;
 
-    background: none;
+  background: none;
 
-    color: inherit;
+  color: inherit;
 
-    font: inherit;
-    line-height: normal;
+  font: inherit;
+  line-height: normal;
 
-    cursor: default;
+  cursor: default;
 
-    -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
-    -webkit-box-sizing: content-box;
-       -moz-box-sizing: content-box;
-            box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
 }
 
 button::-moz-focus-inner {
-    border: 0;
-    padding: 0;
+  border: 0;
+  padding: 0;
 }
 
 /* spoilblock styles */
 
 html, body {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 
-    min-width: 272px;
+  min-width: 272px;
 }
 
 button {
-    box-sizing: border-box;
+  box-sizing: border-box;
 
-    width: 100%;
-    min-height: 40px;
+  width: 100%;
+  min-height: 40px;
 
-    margin: 0;
-    padding: 0 10px;
+  margin: 0;
+  padding: 0 10px;
 
-    border: none;
+  border: none;
 
-    background-color: hsla(0,0%,80%,.3);
+  background-color: hsla(0,0%,80%,.3);
 
-    font: message-box;
+  font: message-box;
 
-    cursor: pointer;
+  cursor: pointer;
 
-    -moz-appearance: none;
+  -moz-appearance: none;
 }
 
 button:hover {
-    background-color: hsla(0,0%,80%,.45)
+  background-color: hsla(0,0%,80%,.45)
+}
+
+.control {
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: 40px;
+
+  margin: 0;
+  padding: 0 10px;
+
+  display: flex;
+  align-items: center;
+}
+
+.control > label {
+  flex-basis: content;
+  flex-grow: 2;
+
+  text-align: center;
+}
+
+.control > input {
+  flex-basis: content;
+  flex-grow: 1;
 }

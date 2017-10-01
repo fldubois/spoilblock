@@ -1,33 +1,33 @@
 /* button reset */
 
 button {
-    overflow: visible;
+  overflow: visible;
 
-    padding: 0;
+  padding: 0;
 
-    border: 0;
+  border: 0;
 
-    background: none;
+  background: none;
 
-    color: inherit;
+  color: inherit;
 
-    font: inherit;
-    line-height: normal;
+  font: inherit;
+  line-height: normal;
 
-    cursor: default;
+  cursor: default;
 
-    -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 
-    -webkit-box-sizing: content-box;
-       -moz-box-sizing: content-box;
-            box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
 }
 
 button::-moz-focus-inner {
-    border: 0;
-    padding: 0;
+  border: 0;
+  padding: 0;
 }
 
 /* spoilblock styles */
