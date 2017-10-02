@@ -141,7 +141,7 @@ browser.runtime.onMessage.addListener((message, sender, reply) => {
       case 'selector:enable':  return selector.enable();
       case 'selector:disable': return selector.disable();
       case 'selector:capture': return selector.capture(message.selector, message.rect);
-      case 'action:show':      return active.show(sender.tab);
+      case 'action:show':      return action.show(sender.tab);
       case 'report:validate':  return report.validate();
       case 'report:cancel':    return report.cancel();
     }

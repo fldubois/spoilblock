@@ -2,10 +2,10 @@
 
 const elements = [];
 
-browser.storage.local.get(['enabled', window.location.hostname]).then((data) => {
+browser.storage.local.get(['enabled', `toggle:${window.location.hostname}`, window.location.hostname]).then((data) => {
   const spoilers = data[window.location.hostname];
 
-  if (spoilers.length > 0 && data.enabled) {
+  if (spoilers.length > 0 && data.enabled && data[`toggle:${window.location.hostname}`]) {
     spoilers.forEach((spoiler) => {
       var element = document.querySelector(spoiler.selector);
 
