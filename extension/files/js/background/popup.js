@@ -23,11 +23,11 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
   const url      = new URL(tabs[0].url);
   const property = `toggle:${url.hostname}`;
 
-  checkboxes.site.addEventListener('change', function () {console.log(property, checkboxes.site.checked);
+  checkboxes.site.addEventListener('change', function () {
     browser.storage.local.set({[property]: checkboxes.site.checked});
   });
 
-  browser.storage.local.get(property).then((data) => {console.log('data', data);
+  browser.storage.local.get(property).then((data) => {
     checkboxes.site.checked = data.hasOwnProperty(property) ? data[property] : true;
   });
 });

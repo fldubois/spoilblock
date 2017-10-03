@@ -2,10 +2,16 @@
 
 const elements = [];
 
-browser.storage.local.get(['enabled', `toggle:${window.location.hostname}`, window.location.hostname]).then((data) => {
-  const spoilers = data[window.location.hostname];
+const keys = {
+  toggle:   `toggle:${window.location.hostname}`,
+  hostname: window.location.hostname
+};
 
-  if (spoilers.length > 0 && data.enabled && data[`toggle:${window.location.hostname}`]) {
+browser.storage.local.get(['enabled', keys.toggle, keys.hostname]).then((data) => {
+  const spoilers = data[keys.hostname];
+  const enabled  = (!data.hasOwnProperty('enabled') || data.enabled === true) && (!data.hasOwnProperty(keys.toggle) || data[keys.toggle] === true);
+
+  if (spoilers.length > 0 && enabled) {
     spoilers.forEach((spoiler) => {
       var element = document.querySelector(spoiler.selector);
 

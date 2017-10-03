@@ -86,32 +86,7 @@
     },
     message: (message) => {
       if (typeof message === 'object') {
-        if (message.action === 'selector:report') {
-          fetch('http://localhost:8080/spoilers', {
-            method: 'POST',
-            headers: {
-              'Accept':       'application/json',
-              'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-              domain:   window.location.hostname,
-              url:      window.location.href,
-              selector: selector
-            })
-          }).then((response) => {
-            if (response.ok) {
-              return response.json().then((body) => {
-                console.log('Spoiler created', body);
-              });
-            } else {
-              console.log('Fail to create spoiler, API returned status ', response.status);
-            }
-          }).catch((error) => {
-            console.error(error);
-          }).then(() => {
-            browser.runtime.sendMessage({action: 'selector:disable'});
-          });
-        } else if (message.action === 'selector:cancel') {
+        if (message.action === 'selector:cancel') {
           selector = null;
         } else if (message.action === 'selector:disable') {
           document.body.removeChild(layer);

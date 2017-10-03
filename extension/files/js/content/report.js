@@ -41,7 +41,7 @@ browser.runtime.onMessage.addListener((message) => {
 });
 
 elements.report.addEventListener('click', () => {
-  browser.runtime.sendMessage({action: 'report:validate'});
+  browser.runtime.sendMessage({action: 'report:validate', selector: elements.selector.innerText});
   window.close();
 });
 

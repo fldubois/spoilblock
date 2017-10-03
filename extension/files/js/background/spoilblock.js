@@ -1,48 +1,50 @@
 'use strict';
 
-const selector = {
+const API_URL = 'http://localhost:8080/spoilers';
+
+const select = {
   tab: null,
 
   enable: function () {
-    if (selector.tab === null) {
+    if (select.tab === null) {
       browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-        selector.tab = tabs.pop();
+        select.tab = tabs.pop();
 
         browser.browserAction.setIcon({
-          tabId: selector.tab.id,
+          tabId: select.tab.id,
           path: {
             '48': 'icons/logo-enabled.svg',
             '96': 'icons/logo-enabled.svg'
           }
         });
 
-        browser.tabs.insertCSS(selector.tab.id, {file: 'css/selector.css'});
-        browser.tabs.executeScript(selector.tab.id, {file: 'js/content/selector.js'});
+        browser.tabs.insertCSS(select.tab.id, {file: 'css/selector.css'});
+        browser.tabs.executeScript(select.tab.id, {file: 'js/content/selector.js'});
       }).catch(console.error);
     }
   },
 
   disable: function (event) {
-    if (selector.tab !== null && (typeof event === 'undefined' || event.tabId === selector.tab.id)) {
-      browser.tabs.sendMessage(selector.tab.id, {action: 'selector:disable'});
+    if (select.tab !== null && (typeof event === 'undefined' || event.tabId === select.tab.id)) {
+      browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'});
 
-      browser.tabs.removeCSS(selector.tab.id, {file: 'css/selector.css'});
+      browser.tabs.removeCSS(select.tab.id, {file: 'css/selector.css'});
 
       browser.browserAction.setIcon({
-        tabId: selector.tab.id,
+        tabId: select.tab.id,
         path: {
           '48': 'icons/logo.svg',
           '96': 'icons/logo.svg'
         }
       });
 
-      selector.tab = null;
+      select.tab = null;
     }
   },
 
   capture: function (selector, rect) {
     return browser.tabs.captureVisibleTab().then((dataUrl) => {
-      report.show(dataUrl, selector, rect)
+      report.show(dataUrl, selector, rect);
     }).catch((error) => {
       console.error(error);
     });
@@ -81,12 +83,20 @@ const report = {
     });
   },
 
-  validate: function () {
-    browser.tabs.sendMessage(selector.tab.id, {action: 'selector:report'});
+  validate: function (selector) {
+    const url = new URL(select.tab.url);
+
+    return api.create({
+      domain:   url.hostname,
+      url:      url.href,
+      selector: selector
+    }).then(() => {
+      browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'});
+    });
   },
 
   cancel: function () {
-    browser.tabs.sendMessage(selector.tab.id, {action: 'selector:cancel'});
+    browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
   }
 };
 
@@ -135,14 +145,53 @@ const action = {
   }
 };
 
+const api = {
+  retrieve: function (hostname) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.open('GET', `${API_URL}?domain=${hostname}`, false);
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.send(null);
+
+      if (xhr.status === 200) {
+        return resolve(JSON.parse(xhr.responseText));
+      } else {
+        return reject(new Error(`Fail to retrieve spoilers, API returned status ${xhr.status}`));
+      }
+    });
+  },
+
+  create: function (data) {
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Accept':       'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then((response) => {
+      if (response.ok) {
+        return response.json().then((body) => {
+          console.log('Spoiler created', body);
+        });
+      } else {
+        console.log('Fail to create spoiler, API returned status ', response.status);
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
+  }
+};
+
 browser.runtime.onMessage.addListener((message, sender, reply) => {
   if (typeof message === 'object') {
     switch (message.action) {
-      case 'selector:enable':  return selector.enable();
-      case 'selector:disable': return selector.disable();
-      case 'selector:capture': return selector.capture(message.selector, message.rect);
+      case 'selector:enable':  return select.enable();
+      case 'selector:disable': return select.disable();
+      case 'selector:capture': return select.capture(message.selector, message.rect);
       case 'action:show':      return action.show(sender.tab);
-      case 'report:validate':  return report.validate();
+      case 'report:validate':  return report.validate(message.selector);
       case 'report:cancel':    return report.cancel();
     }
   }
@@ -150,22 +199,17 @@ browser.runtime.onMessage.addListener((message, sender, reply) => {
 
 browser.pageAction.onClicked.addListener(action.onClick);
 
-browser.tabs.onActivated.addListener(selector.disable);
-browser.webNavigation.onBeforeNavigate.addListener(selector.disable);
+browser.tabs.onActivated.addListener(select.disable);
+browser.webNavigation.onBeforeNavigate.addListener(select.disable);
 
 browser.webRequest.onBeforeRequest.addListener(function (details) {
   if (details.type === 'main_frame' && details.method === 'GET') {
     const url = new URL(details.url);
-    const xhr = new XMLHttpRequest();
 
-    xhr.open('GET', `http://localhost:8080/spoilers?domain=${url.hostname}`, false);
-    xhr.setRequestHeader('Content-type', 'application/json');
-    xhr.send(null);
-
-    if (xhr.status === 200) {
-      const spoilers = JSON.parse(xhr.responseText);
-
+    api.retrieve(url.hostname).then((spoilers) => {
       return browser.storage.local.set({[url.hostname]: spoilers});
-    };
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 }, {urls:['<all_urls>']}, ['blocking']);
