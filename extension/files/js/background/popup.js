@@ -10,11 +10,11 @@ const button = document.querySelector('#spoilblock-popup-report');
 // Global checkbox
 
 checkboxes.global.addEventListener('change', function () {
-  browser.storage.local.set({'enabled': checkboxes.global.checked});
+  browser.storage.local.set({'toggle:enabled': checkboxes.global.checked});
 });
 
-browser.storage.local.get('enabled').then((data) => {
-  checkboxes.global.checked = data.hasOwnProperty('enabled') ? data.enabled : true;
+browser.storage.local.get('toggle:enabled').then((data) => {
+  checkboxes.global.checked = data.hasOwnProperty('toggle:enabled') ? data['toggle:enabled'] : true;
 });
 
 // Site checkbox

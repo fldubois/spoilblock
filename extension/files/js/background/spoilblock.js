@@ -111,19 +111,27 @@ const action = {
     }
   },
 
+  hide: function (tab) {
+    if (typeof tab === 'object' && tab.active === true) {
+      browser.pageAction.hide(tab.id);
+
+      action.states[tab.id] = true;
+    }
+  },
+
   onClick: function (tab) {
-    let action = null;
-    let icon   = null;
-    let title  = null;
+    let message = null;
+    let icon    = null;
+    let title   = null;
 
     if (action.states[tab.id] === true) {
-      title  = browser.i18n.getMessage('pageActionHide');
-      icon   = 'icons/logo.svg';
-      action = 'spoilers:show';
+      title   = browser.i18n.getMessage('pageActionHide');
+      icon    = 'icons/logo.svg';
+      message = {action: 'spoilers:show'};
     } else {
-      title  = browser.i18n.getMessage('pageActionShow');
-      icon   = 'icons/logo-enabled.svg';
-      action = 'spoilers:hide';
+      title   = browser.i18n.getMessage('pageActionShow');
+      icon    = 'icons/logo-enabled.svg';
+      message = {action: 'spoilers:hide'};
     }
 
     action.states[tab.id] = !action.states[tab.id];
@@ -141,7 +149,7 @@ const action = {
       }
     });
 
-    browser.tabs.sendMessage(tab.id, {action: action});
+    browser.tabs.sendMessage(tab.id, message);
   }
 };
 
@@ -191,6 +199,7 @@ browser.runtime.onMessage.addListener((message, sender, reply) => {
       case 'selector:disable': return select.disable();
       case 'selector:capture': return select.capture(message.selector, message.rect);
       case 'action:show':      return action.show(sender.tab);
+      case 'action:hide':      return action.hide(sender.tab);
       case 'report:validate':  return report.validate(message.selector);
       case 'report:cancel':    return report.cancel();
     }

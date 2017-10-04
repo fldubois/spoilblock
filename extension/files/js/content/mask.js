@@ -1,53 +1,89 @@
 'use strict';
 
-const elements = [];
+const toggles = [
+  'toggle:enabled',
+  `toggle:${window.location.hostname}`
+];
 
-const keys = {
-  toggle:   `toggle:${window.location.hostname}`,
-  hostname: window.location.hostname
+const spoilers = {
+  elements: [],
+
+  init: (spoiler) => {
+    var element = document.querySelector(spoiler.selector);
+
+    if (element !== null && spoilers.elements.indexOf(element) === -1) {
+      element.addEventListener('dblclick', function listener(event) {
+        if (element.classList.contains('spoilblock-masked')) {
+          event.stopPropagation();
+          event.preventDefault();
+
+          element.classList.remove('spoilblock-masked');
+        }
+      }, true);
+
+      spoilers.elements.push(element);
+    }
+  },
+
+  hide: () => {
+    spoilers.elements.filter((element) => !element.classList.contains('spoilblock-masked')).forEach((element) => {
+      element.classList.add('spoilblock-masked');
+    });
+  },
+
+  show: () => {
+    spoilers.elements.filter((element) => element.classList.contains('spoilblock-masked')).forEach((element) => {
+      element.classList.remove('spoilblock-masked');
+    });
+  }
 };
 
-browser.storage.local.get(['enabled', keys.toggle, keys.hostname]).then((data) => {
-  const spoilers = data[keys.hostname];
-  const enabled  = (!data.hasOwnProperty('enabled') || data.enabled === true) && (!data.hasOwnProperty(keys.toggle) || data[keys.toggle] === true);
+browser.storage.local.get([...toggles, window.location.hostname]).then((data) => {
+  const enabled = toggles.reduce((enabled, toggle) => {
+    return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true)
+  }, true);
 
-  if (spoilers.length > 0 && enabled) {
-    spoilers.forEach((spoiler) => {
-      var element = document.querySelector(spoiler.selector);
+  data[window.location.hostname].forEach(spoilers.init);
 
-      if (element !== null && elements.indexOf(element) === -1) {
-        element.classList.add('spoilblock-masked');
-
-        element.addEventListener('dblclick', function listener(event) {
-          if (element.classList.contains('spoilblock-masked')) {
-            event.stopPropagation();
-            event.preventDefault();
-
-            element.classList.remove('spoilblock-masked');
-          }
-        }, true);
-
-        elements.push(element);
-      }
-    });
-
-    browser.runtime.onMessage.addListener((message) => {
-      if (typeof message === 'object') {
-        switch (message.action) {
-          case 'spoilers:hide':
-            elements.filter((element) => !element.classList.contains('spoilblock-masked')).forEach((element) => {
-              element.classList.add('spoilblock-masked');
-            });
-            break;
-          case 'spoilers:show':
-            elements.filter((element) => element.classList.contains('spoilblock-masked')).forEach((element) => {
-              element.classList.remove('spoilblock-masked');
-            });
-            break;
-        }
-      }
-    });
-
+  if (enabled === true) {
+    spoilers.hide();
     browser.runtime.sendMessage({action: 'action:show'});
   }
 })
+
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local') {
+    browser.storage.local.get(toggles).then((data) => {
+      let changed = false;
+      let enabled = true;
+
+      toggles.forEach((toggle) => {
+        if (changes.hasOwnProperty(toggle)) {
+          changed = true;
+          enabled = enabled && changes[toggle].newValue;
+        } else {
+          enabled = enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true)
+        }
+      });
+
+      if (changed === true) {
+        if (enabled === true) {
+          spoilers.hide();
+          browser.runtime.sendMessage({action: 'action:show'});
+        } else {
+          spoilers.show();
+          browser.runtime.sendMessage({action: 'action:hide'});
+        }
+      }
+    });
+  }
+});
+
+browser.runtime.onMessage.addListener((message) => {
+  if (typeof message === 'object') {
+    switch (message.action) {
+      case 'spoilers:hide': return spoilers.hide();
+      case 'spoilers:show': return spoilers.show();
+    }
+  }
+});
