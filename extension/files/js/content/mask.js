@@ -7,6 +7,7 @@ const toggles = [
 
 const spoilers = {
   elements: [],
+  enabled:  false,
 
   init: (spoiler) => {
     var element = document.querySelector(spoiler.selector);
@@ -22,6 +23,10 @@ const spoilers = {
       }, true);
 
       spoilers.elements.push(element);
+
+      if (spoilers.enabled === true) {
+        element.classList.add('spoilblock-masked');
+      }
     }
   },
 
@@ -45,6 +50,8 @@ browser.storage.local.get([...toggles, window.location.hostname]).then((data) =>
 
   data[window.location.hostname].forEach(spoilers.init);
 
+  spoilers.enabled = enabled;
+
   if (enabled === true) {
     spoilers.hide();
     browser.runtime.sendMessage({action: 'action:show'});
@@ -67,6 +74,8 @@ browser.storage.onChanged.addListener((changes, area) => {
       });
 
       if (changed === true) {
+        spoilers.enabled = enabled;
+
         if (enabled === true) {
           spoilers.hide();
           browser.runtime.sendMessage({action: 'action:show'});
@@ -84,6 +93,7 @@ browser.runtime.onMessage.addListener((message) => {
     switch (message.action) {
       case 'spoilers:hide': return spoilers.hide();
       case 'spoilers:show': return spoilers.show();
+      case 'spoilers:add':  return spoilers.init(message.spoiler);
     }
   }
 });

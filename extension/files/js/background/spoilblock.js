@@ -86,12 +86,15 @@ const report = {
   validate: function (selector) {
     const url = new URL(select.tab.url);
 
-    return api.create({
+    const spoiler = {
       domain:   url.hostname,
       url:      url.href,
       selector: selector
-    }).then(() => {
+    };
+
+    return api.create(spoiler).then(() => {
       browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'});
+      browser.tabs.sendMessage(select.tab.id, {action: 'spoilers:add', spoiler: spoiler});
     });
   },
 
