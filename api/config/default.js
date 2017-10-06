@@ -12,5 +12,7 @@ module.exports = {
   logger: {
     level: 'info',
     path:  path.resolve(__dirname, '../logs')
-  }
+  },
+
+  cache: false
 };

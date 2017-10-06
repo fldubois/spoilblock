@@ -1,6 +1,7 @@
 'use strict';
 
 const ajv     = require('ajv')({allErrors: true});
+const config  = require('config');
 const express = require('express');
 const uuid    = require('uuid');
 
@@ -9,6 +10,8 @@ const db = require('../common/database');
 const schema = require('../schemas/spoiler.json');
 
 const router = express.Router();
+
+const cache = config.has('cache') ? config.get('cache') : 600;
 
 db.createIndex({
   index: {fields: ['domain']}
@@ -25,7 +28,9 @@ router.get('/', function (req, res) {
       'selector'
     ]
   }).then(function (result) {
-    return res.status(200).json(result.docs);
+    return res.status(200).set({
+      'Cache-Control': (cache === false) ? 'no-cache, no-store, must-revalidate' : `public, must-revalidate, max-age=${cache}`
+    }).json(result.docs);
   }).catch(function (error) {
     logger.error(error);
 

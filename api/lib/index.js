@@ -17,6 +17,8 @@ const pkg = require('../package.json');
 
 const app = express();
 
+app.set('x-powered-by', false);
+
 app.use(middlewares.bodyParser.json());
 
 app.use((req, res, next) => {

@@ -158,17 +158,16 @@ const action = {
 
 const api = {
   retrieve: function (hostname) {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-
-      xhr.open('GET', `${API_URL}?domain=${hostname}`, false);
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.send(null);
-
-      if (xhr.status === 200) {
-        return resolve(JSON.parse(xhr.responseText));
+    return fetch(API_URL, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
       } else {
-        return reject(new Error(`Fail to retrieve spoilers, API returned status ${xhr.status}`));
+        return Promise.reject(new Error(`Fail to retrieve spoilers, API returned status ${response.status}`));
       }
     });
   },
