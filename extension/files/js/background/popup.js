@@ -5,7 +5,8 @@ const checkboxes = {
   site:   document.querySelector('#spoilblock-popup-switch-site-checkbox')
 };
 
-const button = document.querySelector('#spoilblock-popup-report');
+const button  = document.querySelector('#spoilblock-popup-report');
+const counter = document.querySelector('#spoilblock-popup-counter');
 
 // Global checkbox
 
@@ -37,4 +38,10 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
 button.addEventListener('click', function () {
   browser.runtime.sendMessage({action: 'selector:enable'});
   window.close();
+});
+
+// Spoilers counter
+
+browser.runtime.sendMessage({action: 'spoilers:count'}).then((count) => {
+  counter.innerText = count;
 });

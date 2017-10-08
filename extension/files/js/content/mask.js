@@ -30,6 +30,10 @@ const spoilers = {
     }
   },
 
+  count: () => {
+    return Promise.resolve(spoilers.elements.length);
+  },
+
   hide: () => {
     spoilers.elements.filter((element) => !element.classList.contains('spoilblock-masked')).forEach((element) => {
       element.classList.add('spoilblock-masked');
@@ -91,9 +95,10 @@ browser.storage.onChanged.addListener((changes, area) => {
 browser.runtime.onMessage.addListener((message) => {
   if (typeof message === 'object') {
     switch (message.action) {
-      case 'spoilers:hide': return spoilers.hide();
-      case 'spoilers:show': return spoilers.show();
-      case 'spoilers:add':  return spoilers.init(message.spoiler);
+      case 'spoilers:hide':  return spoilers.hide();
+      case 'spoilers:show':  return spoilers.show();
+      case 'spoilers:count': return spoilers.count();
+      case 'spoilers:add':   return spoilers.init(message.spoiler);
     }
   }
 });

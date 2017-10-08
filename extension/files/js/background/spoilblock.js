@@ -194,6 +194,16 @@ const api = {
   }
 };
 
+const spoilers = {
+  count: function () {
+    return browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+      const tab = tabs.pop();
+
+      return browser.tabs.sendMessage(tab.id, {action: 'spoilers:count'});
+    });
+  },
+};
+
 browser.runtime.onMessage.addListener((message, sender, reply) => {
   if (typeof message === 'object') {
     switch (message.action) {
@@ -204,6 +214,7 @@ browser.runtime.onMessage.addListener((message, sender, reply) => {
       case 'action:hide':      return action.hide(sender.tab);
       case 'report:validate':  return report.validate(message.selector);
       case 'report:cancel':    return report.cancel();
+      case 'spoilers:count':   return spoilers.count();
     }
   }
 });
