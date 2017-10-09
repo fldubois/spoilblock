@@ -23,6 +23,32 @@
   "reportCancel": {
     "message": "Annuler",
     "description": "Report form cancel button text"
+  },
+
+  "popupReport": {
+    "message": "Signaler un spoiler",
+    "description": "Popup report button text"
+  },
+
+  "popupSwitchGlobal": {
+    "message": "Cacher les spoilers",
+    "description": "Popup global switch label"
+  },
+
+  "popupSwitchSite": {
+    "message": "Cacher les spoilers sur ce site",
+    "description": "Popup site specific switch label"
+  },
+
+  "popupCounter": {
+    "message": "$COUNT$ spoilers sur cette page",
+    "description": "Number of spoilers reported on the current page",
+    "placeholders": {
+      "count" : {
+        "content" : "$1",
+        "example" : "0"
+      }
+    }
   }
 
 }
