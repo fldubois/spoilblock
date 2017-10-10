@@ -32,7 +32,7 @@ button::-moz-focus-inner {
 
 /* spoilblock styles */
 
-#spoilblock-select-layer {
+#s8k-select-layer {
   position: absolute;
 
   top: 0;
@@ -48,7 +48,7 @@ button::-moz-focus-inner {
   z-index:99999;
 }
 
-#spoilblock-select-box {
+#s8k-select-box {
   position: absolute;
 
   top:  0;
@@ -66,7 +66,7 @@ button::-moz-focus-inner {
   pointer-events: none;
 }
 
-#spoilblock-select-container {
+#s8k-select-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,7 +81,7 @@ button::-moz-focus-inner {
 
 }
 
-#spoilblock-select-popup {
+#s8k-select-popup {
   display: none;
 
   padding: 0.4rem;
@@ -95,11 +95,11 @@ button::-moz-focus-inner {
   pointer-events: all;
 }
 
-#spoilblock-select-popup.visible {
+#s8k-select-popup.visible {
   display: block;
 }
 
-#spoilblock-select-popup > h1 {
+#s8k-select-popup > h1 {
   color: #8fa1b2;
 
   font-family: 'Open Sans Light';
@@ -108,18 +108,18 @@ button::-moz-focus-inner {
   text-shadow: none;
 }
 
-#spoilblock-select-popup > div {
+#s8k-select-popup > div {
   text-align: right;
 }
 
-#spoilblock-select-popup-selector {
+#s8k-select-popup-selector {
   color: #757873;
 
   font-family: 'Consolas','monaco','monospace';
   font-size: 1rem;
 }
 
-#spoilblock-select-popup-report, #spoilblock-select-popup-cancel {
+#s8k-select-popup-report, #s8k-select-popup-cancel {
   margin: 0.25rem;
 
   color: #46afe3;

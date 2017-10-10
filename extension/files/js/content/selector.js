@@ -11,16 +11,16 @@
 
   const layer = document.createElement('div');
 
-  layer.setAttribute('id', 'spoilblock-select-layer');
+  layer.setAttribute('id', 's8k-select-layer');
 
   layer.innerHTML = `
-    <div id="spoilblock-select-box"></div>
+    <div id="s8k-select-box"></div>
   `;
 
   document.body.appendChild(layer);
 
   const elements = {
-    box: layer.querySelector('#spoilblock-select-box')
+    box: layer.querySelector('#s8k-select-box')
   };
 
   // Event handlers

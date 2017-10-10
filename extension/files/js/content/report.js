@@ -1,10 +1,10 @@
 'use strict';
 
 const elements = {
-  preview:  document.querySelector('#spoilblock-select-popup-preview'),
-  selector: document.querySelector('#spoilblock-select-popup-selector'),
-  cancel:   document.querySelector('#spoilblock-select-popup-cancel'),
-  report:   document.querySelector('#spoilblock-select-popup-report')
+  preview:  document.querySelector('#s8k-select-popup-preview'),
+  selector: document.querySelector('#s8k-select-popup-selector'),
+  cancel:   document.querySelector('#s8k-select-popup-cancel'),
+  report:   document.querySelector('#s8k-select-popup-report')
 };
 
 const ctx = elements.preview.getContext('2d');

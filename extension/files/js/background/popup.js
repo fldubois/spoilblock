@@ -2,17 +2,17 @@
 
 const switches = {
   global: {
-    label:    document.querySelector('#spoilblock-popup-switch-global-label'),
-    checkbox: document.querySelector('#spoilblock-popup-switch-global-checkbox')
+    label:    document.querySelector('#s8k-menu-switch-global-label'),
+    checkbox: document.querySelector('#s8k-menu-switch-global-checkbox')
   },
   site: {
-    label:    document.querySelector('#spoilblock-popup-switch-site-label'),
-    checkbox: document.querySelector('#spoilblock-popup-switch-site-checkbox')
+    label:    document.querySelector('#s8k-menu-switch-site-label'),
+    checkbox: document.querySelector('#s8k-menu-switch-site-checkbox')
   }
 };
 
-const button  = document.querySelector('#spoilblock-popup-report');
-const counter = document.querySelector('#spoilblock-popup-counter');
+const button  = document.querySelector('#s8k-menu-report');
+const counter = document.querySelector('#s8k-menu-counter');
 
 // i18n
 

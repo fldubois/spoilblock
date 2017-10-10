@@ -1,5 +1,7 @@
 'use strict';
 
+const CLASS_MASKED = 's8k-masked';
+
 const toggles = [
   'toggle:enabled',
   `toggle:${window.location.hostname}`
@@ -14,18 +16,18 @@ const spoilers = {
 
     if (element !== null && spoilers.elements.indexOf(element) === -1) {
       element.addEventListener('dblclick', function listener(event) {
-        if (element.classList.contains('spoilblock-masked')) {
+        if (element.classList.contains(CLASS_MASKED)) {
           event.stopPropagation();
           event.preventDefault();
 
-          element.classList.remove('spoilblock-masked');
+          element.classList.remove(CLASS_MASKED);
         }
       }, true);
 
       spoilers.elements.push(element);
 
       if (spoilers.enabled === true) {
-        element.classList.add('spoilblock-masked');
+        element.classList.add(CLASS_MASKED);
       }
     }
   },
@@ -35,14 +37,14 @@ const spoilers = {
   },
 
   hide: () => {
-    spoilers.elements.filter((element) => !element.classList.contains('spoilblock-masked')).forEach((element) => {
-      element.classList.add('spoilblock-masked');
+    spoilers.elements.filter((element) => !element.classList.contains(CLASS_MASKED)).forEach((element) => {
+      element.classList.add(CLASS_MASKED);
     });
   },
 
   show: () => {
-    spoilers.elements.filter((element) => element.classList.contains('spoilblock-masked')).forEach((element) => {
-      element.classList.remove('spoilblock-masked');
+    spoilers.elements.filter((element) => element.classList.contains(CLASS_MASKED)).forEach((element) => {
+      element.classList.remove(CLASS_MASKED);
     });
   }
 };
