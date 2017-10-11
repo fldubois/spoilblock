@@ -53,13 +53,16 @@ const select = {
 
 const report = {
   show: function (dataUrl, selector, rect) {
-    browser.windows.create({
-      url:    browser.extension.getURL('html/report.html'),
-      type:   'popup',
-      width:  rect.width,
-      height: rect.height
-    }).then((window) => {
-      const tabId = window.tabs[0].id;
+    Promise.all([
+      browser.windows.getCurrent({windowTypes: ['normal']}),
+      browser.windows.create({
+        url:    browser.extension.getURL('html/report.html'),
+        type:   'popup',
+        width:  rect.width,
+        height: rect.height
+      })
+    ]).then(([window, popup]) => {
+      const tabId = popup.tabs[0].id;
 
       const handler = (details) => {
         if (details.tabId === tabId) {
@@ -69,9 +72,14 @@ const report = {
             selector: selector,
             rect:     rect
           }).then((response) => {
-            browser.windows.update(window.id, {
-              width:  response.width  + 1,
-              height: response.height + 1
+            const width  = response.width   + 1;
+            const height = response.height  + 1;
+
+            browser.windows.update(popup.id, {
+              width:  width,
+              height: height,
+              left:   Math.round(window.left + (window.width  / 2) - (width  / 2)),
+              top:    Math.round(window.top  + (window.height / 2) - (height / 2))
             });
           });
 
