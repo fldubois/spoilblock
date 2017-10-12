@@ -52,6 +52,8 @@ const select = {
 };
 
 const report = {
+  window: null,
+
   show: function (dataUrl, selector, rect) {
     Promise.all([
       browser.windows.getCurrent({windowTypes: ['normal']}),
@@ -63,6 +65,8 @@ const report = {
       })
     ]).then(([window, popup]) => {
       const tabId = popup.tabs[0].id;
+
+      report.window = popup.id;
 
       const handler = (details) => {
         if (details.tabId === tabId) {
@@ -100,6 +104,8 @@ const report = {
       selector: selector
     };
 
+    report.window = null;
+
     return api.create(spoiler).then(() => {
       browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'});
       browser.tabs.sendMessage(select.tab.id, {action: 'spoilers:add', spoiler: spoiler});
@@ -107,9 +113,19 @@ const report = {
   },
 
   cancel: function () {
+    report.window = null;
+
     browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
   }
 };
+
+browser.windows.onRemoved.addListener((id) => {
+  if (report.window !== null && report.window === id) {
+    browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
+
+    report.window = null;
+  }
+});
 
 const action = {
   states: [],
