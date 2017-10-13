@@ -28,6 +28,10 @@ const spoilers = {
 
       if (spoilers.enabled === true) {
         element.classList.add(CLASS_MASKED);
+
+        if (spoilers.elements.length === 1) {
+          browser.runtime.sendMessage({action: 'action:show'});
+        }
       }
     }
   },
@@ -58,7 +62,7 @@ browser.storage.local.get([...toggles, window.location.hostname]).then((data) =>
 
   spoilers.enabled = enabled;
 
-  if (enabled === true) {
+  if (enabled === true && spoilers.elements.length > 0) {
     spoilers.hide();
     browser.runtime.sendMessage({action: 'action:show'});
   }
@@ -82,7 +86,7 @@ browser.storage.onChanged.addListener((changes, area) => {
       if (changed === true) {
         spoilers.enabled = enabled;
 
-        if (enabled === true) {
+        if (enabled === true && spoilers.elements.length > 0) {
           spoilers.hide();
           browser.runtime.sendMessage({action: 'action:show'});
         } else {

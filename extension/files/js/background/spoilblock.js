@@ -135,34 +135,18 @@ const action = {
       browser.pageAction.show(tab.id);
 
       action.states[tab.id] = true;
+
+      action.enable(tab);
     }
   },
 
   hide: function (tab) {
     if (typeof tab === 'object' && tab.active === true) {
       browser.pageAction.hide(tab.id);
-
-      action.states[tab.id] = true;
     }
   },
 
-  onClick: function (tab) {
-    let message = null;
-    let icon    = null;
-    let title   = null;
-
-    if (action.states[tab.id] === true) {
-      title   = browser.i18n.getMessage('pageActionHide');
-      icon    = 'icons/logo.svg';
-      message = {action: 'spoilers:show'};
-    } else {
-      title   = browser.i18n.getMessage('pageActionShow');
-      icon    = 'icons/logo-enabled.svg';
-      message = {action: 'spoilers:hide'};
-    }
-
-    action.states[tab.id] = !action.states[tab.id];
-
+  update: function (tab, title, icon, action) {
     browser.pageAction.setTitle({
       tabId: tab.id,
       title: title
@@ -176,7 +160,25 @@ const action = {
       }
     });
 
-    browser.tabs.sendMessage(tab.id, message);
+    browser.tabs.sendMessage(tab.id, {action: action});
+  },
+
+  enable: function (tab) {
+    action.update(tab, browser.i18n.getMessage('pageActionShow'), 'icons/logo-enabled.svg', 'spoilers:hide');
+  },
+
+  disable: function (tab) {
+    action.update(tab, browser.i18n.getMessage('pageActionHide'), 'icons/logo.svg', 'spoilers:show');
+  },
+
+  onClick: function (tab) {
+    if (action.states[tab.id] === true) {
+      action.disable(tab);
+    } else {
+      action.enable(tab);
+    }
+
+    action.states[tab.id] = !action.states[tab.id];
   }
 };
 
