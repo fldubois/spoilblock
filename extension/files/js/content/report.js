@@ -10,7 +10,7 @@ const elements = {
 const ctx = elements.preview.getContext('2d');
 
 browser.runtime.onMessage.addListener((message) => {
-  if (typeof message === 'object' && message.action === 'report:show') {
+  if (typeof message === 'object' && message.action === 'report:open') {
     const img  = document.createElement('img');
     const rect = message.rect;
 
@@ -42,10 +42,8 @@ browser.runtime.onMessage.addListener((message) => {
 
 elements.report.addEventListener('click', () => {
   browser.runtime.sendMessage({action: 'report:validate', selector: elements.selector.innerText});
-  window.close();
 });
 
 elements.cancel.addEventListener('click', () => {
   browser.runtime.sendMessage({action: 'report:cancel'});
-  window.close();
 });

@@ -44,7 +44,7 @@ const select = {
 
   capture: function (selector, rect) {
     return browser.tabs.captureVisibleTab().then((dataUrl) => {
-      report.show(dataUrl, selector, rect);
+      report.open(dataUrl, selector, rect);
     }).catch((error) => {
       console.error(error);
     });
@@ -54,7 +54,7 @@ const select = {
 const report = {
   window: null,
 
-  show: function (dataUrl, selector, rect) {
+  open: function (dataUrl, selector, rect) {
     Promise.all([
       browser.windows.getCurrent({windowTypes: ['normal']}),
       browser.windows.create({
@@ -71,7 +71,7 @@ const report = {
       const handler = (details) => {
         if (details.tabId === tabId) {
           browser.tabs.sendMessage(tabId, {
-            action:   'report:show',
+            action:   'report:open',
             dataUrl:  dataUrl,
             selector: selector,
             rect:     rect
@@ -95,6 +95,16 @@ const report = {
     });
   },
 
+  close: function () {
+    if (report.window === null) {
+      return Promise.reject(new Error('Report popup is not open'));
+    }
+
+    return  browser.windows.remove(report.window).then(() => {
+      report.window = null;
+    });
+  },
+
   validate: function (selector) {
     const url = new URL(select.tab.url);
 
@@ -104,18 +114,20 @@ const report = {
       selector: selector
     };
 
-    report.window = null;
-
-    return api.create(spoiler).then(() => {
-      browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'});
-      browser.tabs.sendMessage(select.tab.id, {action: 'spoilers:add', spoiler: spoiler});
+    return report.close().then(() => {
+      return api.create(spoiler);
+    }).then(() => {
+      return Promise.all([
+        browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'}),
+        browser.tabs.sendMessage(select.tab.id, {action: 'spoilers:add', spoiler: spoiler})
+      ]);
     });
   },
 
   cancel: function () {
-    report.window = null;
-
-    browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
+    return report.close().then(() => {
+      return browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
+    });
   }
 };
 
