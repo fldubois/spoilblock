@@ -115,13 +115,13 @@
     const tag = element.tagName.toLowerCase();
 
     if (tag === 'img') {
-      selectors.unshift(`${tag}[src="${element.src}"]`);
-    } else if (element.id !== '') {
-      selectors.unshift(`${tag}#${element.id}`);
+      selectors.unshift(`${tag}[src="${element.getAttribute('src')}"]`);
+    } else if (element.getAttribute('id') !== '') {
+      selectors.unshift(`${tag}#${element.getAttribute('id')}`);
     } else {
       selectors.unshift(tag);
 
-      if (element.parentElement !== null && element.id === '') {
+      if (element.parentElement !== null && element.getAttribute('id') === '') {
         const siblings = Array.prototype.filter.call(element.parentElement.children || [], function (item) {
           return (item.tagName === element.tagName);
         });
