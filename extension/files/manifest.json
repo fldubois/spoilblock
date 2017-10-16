@@ -27,6 +27,15 @@
     "<all_urls>"
   ],
 
+  "commands": {
+    "report": {
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
+      "description": "Toggle spoiler reporter"
+    }
+  },
+
   "browser_action": {
     "default_icon": "icons/logo.svg",
     "default_title": "SpoilBlock",

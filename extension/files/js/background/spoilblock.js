@@ -51,6 +51,16 @@ const select = {
   }
 };
 
+browser.commands.onCommand.addListener(function(command) {
+  if (command == 'report') {
+    if (select.tab === null) {
+      select.enable();
+    } else {
+      select.disable();
+    }
+  }
+});
+
 const report = {
   window: null,
 
