@@ -1,13 +1,21 @@
 'use strict';
 
 const elements = {
-  preview:  document.querySelector('#s8k-select-popup-preview'),
-  selector: document.querySelector('#s8k-select-popup-selector'),
-  cancel:   document.querySelector('#s8k-select-popup-cancel'),
-  report:   document.querySelector('#s8k-select-popup-report')
+  title:    document.querySelector('#s8k-report-title'),
+  preview:  document.querySelector('#s8k-report-preview'),
+  selector: document.querySelector('#s8k-report-selector'),
+  cancel:   document.querySelector('#s8k-report-cancel'),
+  confirm:  document.querySelector('#s8k-report-confirm')
 };
 
 const ctx = elements.preview.getContext('2d');
+
+// i18n
+
+elements.title.innerText   = browser.i18n.getMessage('reportTitle');
+elements.confirm.innerText = browser.i18n.getMessage('reportConfirm');
+elements.cancel.innerText  = browser.i18n.getMessage('reportCancel');
+
 
 browser.runtime.onMessage.addListener((message) => {
   if (typeof message === 'object' && message.action === 'report:open') {
@@ -40,7 +48,7 @@ browser.runtime.onMessage.addListener((message) => {
   }
 });
 
-elements.report.addEventListener('click', () => {
+elements.confirm.addEventListener('click', () => {
   browser.runtime.sendMessage({action: 'report:validate', selector: elements.selector.innerText});
 });
 
