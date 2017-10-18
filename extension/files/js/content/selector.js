@@ -116,12 +116,12 @@
 
     if (tag === 'img') {
       selectors.unshift(`${tag}[src="${element.getAttribute('src')}"]`);
-    } else if (element.getAttribute('id') !== '') {
+    } else if (element.getAttribute('id') !== null) {
       selectors.unshift(`${tag}#${element.getAttribute('id')}`);
     } else {
       selectors.unshift(tag);
 
-      if (element.parentElement !== null && element.getAttribute('id') === '') {
+      if (element.parentElement !== null) {
         const siblings = Array.prototype.filter.call(element.parentElement.children || [], function (item) {
           return (item.tagName === element.tagName);
         });
