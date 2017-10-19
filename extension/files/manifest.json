@@ -28,9 +28,15 @@
   ],
 
   "commands": {
-    "report": {
+    "toggle": {
       "suggested_key": {
         "default": "Alt+Shift+S"
+      },
+      "description": "Toggle spoiler masking"
+    },
+    "report": {
+      "suggested_key": {
+        "default": "Alt+Shift+R"
       },
       "description": "Toggle spoiler reporter"
     }

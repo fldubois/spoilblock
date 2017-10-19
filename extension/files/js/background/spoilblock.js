@@ -51,16 +51,6 @@ const select = {
   }
 };
 
-browser.commands.onCommand.addListener(function(command) {
-  if (command == 'report') {
-    if (select.tab === null) {
-      select.enable();
-    } else {
-      select.disable();
-    }
-  }
-});
-
 const report = {
   window: null,
 
@@ -193,7 +183,7 @@ const action = {
     action.update(tab, browser.i18n.getMessage('pageActionHide'), 'icons/logo.svg', 'spoilers:show');
   },
 
-  onClick: function (tab) {
+  toggle: function (tab) {
     if (action.states[tab.id] === true) {
       action.disable(tab);
     } else {
@@ -245,9 +235,7 @@ const api = {
 const spoilers = {
   count: function () {
     return browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-      const tab = tabs.pop();
-
-      return browser.tabs.sendMessage(tab.id, {action: 'spoilers:count'});
+      return browser.tabs.sendMessage(tab[0].id, {action: 'spoilers:count'});
     });
   },
 };
@@ -267,7 +255,24 @@ browser.runtime.onMessage.addListener((message, sender, reply) => {
   }
 });
 
-browser.pageAction.onClicked.addListener(action.onClick);
+browser.pageAction.onClicked.addListener(action.toggle);
+
+browser.commands.onCommand.addListener(function (command) {
+  switch (command) {
+    case 'toggle':
+      browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+        action.toggle(tabs[0]);
+      });
+      break;
+    case 'report':
+      if (select.tab === null) {
+        select.enable();
+      } else {
+        select.disable();
+      }
+      break;
+  }
+});
 
 browser.tabs.onActivated.addListener(select.disable);
 browser.webNavigation.onBeforeNavigate.addListener(select.disable);
