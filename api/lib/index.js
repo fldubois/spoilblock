@@ -15,6 +15,8 @@ const logger = require('./common/logger').child({ns: 'http'});
 
 const pkg = require('../package.json');
 
+const HTTP_BAD_REQUEST = 400;
+
 const app = express();
 
 app.set('x-powered-by', false);
@@ -24,7 +26,7 @@ app.use(middlewares.bodyParser.json());
 app.use((req, res, next) => {
   const start = Date.now();
 
-  req.logger = logger.child({req_id: uuid.v4()});
+  req.logger = logger.child({reqId: uuid.v4()});
 
   req.logger.info({
     event:  'request',
@@ -34,7 +36,7 @@ app.use((req, res, next) => {
   }, `${req.method.toUpperCase()} ${req.originalUrl}`);
 
   onFinished(res, () => {
-    const level = (res.statusCode < 400) ? 'info' : 'error';
+    const level = (res.statusCode < HTTP_BAD_REQUEST) ? 'info' : 'error';
 
     req.logger[level]({
       event:        'response',
@@ -56,6 +58,6 @@ app.get('/', (req, res) => {
 
 app.use('/spoilers', require('./routes/spoilers'));
 
-app.listen(config.get('port'), function () {
+app.listen(config.get('port'), () => {
   logger.info(`Spoilblock API listening on port ${config.get('port')}`);
 });

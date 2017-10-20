@@ -12,10 +12,10 @@ const spoilers = {
   enabled:  false,
 
   init: (spoiler) => {
-    var element = document.querySelector(spoiler.selector);
+    const element = document.querySelector(spoiler.selector);
 
     if (element !== null && spoilers.elements.indexOf(element) === -1) {
-      element.addEventListener('dblclick', function listener(event) {
+      element.addEventListener('dblclick', (event) => {
         if (element.classList.contains(CLASS_MASKED)) {
           event.stopPropagation();
           event.preventDefault();
@@ -55,7 +55,7 @@ const spoilers = {
 
 browser.storage.local.get([...toggles, window.location.hostname]).then((data) => {
   const enabled = toggles.reduce((enabled, toggle) => {
-    return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true)
+    return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
   }, true);
 
   data[window.location.hostname].forEach(spoilers.init);
@@ -66,7 +66,7 @@ browser.storage.local.get([...toggles, window.location.hostname]).then((data) =>
     spoilers.hide();
     browser.runtime.sendMessage({action: 'action:show'});
   }
-})
+});
 
 browser.storage.onChanged.addListener((changes, area) => {
   if (area === 'local') {
@@ -79,7 +79,7 @@ browser.storage.onChanged.addListener((changes, area) => {
           changed = true;
           enabled = enabled && changes[toggle].newValue;
         } else {
-          enabled = enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true)
+          enabled = enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
         }
       });
 
@@ -99,12 +99,15 @@ browser.storage.onChanged.addListener((changes, area) => {
 });
 
 browser.runtime.onMessage.addListener((message) => {
-  if (typeof message === 'object') {
-    switch (message.action) {
-      case 'spoilers:hide':  return spoilers.hide();
-      case 'spoilers:show':  return spoilers.show();
-      case 'spoilers:count': return spoilers.count();
-      case 'spoilers:add':   return spoilers.init(message.spoiler);
-    }
+  if (typeof message !== 'object') {
+    return false;
+  }
+
+  switch (message.action) {
+    case 'spoilers:hide':  return spoilers.hide();
+    case 'spoilers:show':  return spoilers.show();
+    case 'spoilers:count': return spoilers.count();
+    case 'spoilers:add':   return spoilers.init(message.spoiler);
+    default: return false;
   }
 });

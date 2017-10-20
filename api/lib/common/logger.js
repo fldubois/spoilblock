@@ -19,7 +19,7 @@ try {
 }
 
 module.exports = bunyan.createLogger({
-  name:  pkg.name,
+  name:    pkg.name,
   streams: [
     {
       level:  level,
@@ -27,11 +27,11 @@ module.exports = bunyan.createLogger({
     },
     {
       level: level,
-      path:  path.resolve(config.get('logger.path'), pkg.name + '.log')
+      path:  path.resolve(config.get('logger.path'), `${pkg.name}.log`)
     },
     {
       level: 'error',
-      path:  path.resolve(config.get('logger.path'), pkg.name + '.error')
+      path:  path.resolve(config.get('logger.path'), `${pkg.name}.error`)
     }
   ],
   serializers: bunyan.stdSerializers

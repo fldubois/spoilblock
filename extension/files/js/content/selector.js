@@ -47,11 +47,11 @@
 
         const rect = target.getBoundingClientRect();
 
-        elements.box.style.top  = (window.scrollY + rect.top)  + 'px';
-        elements.box.style.left = (window.scrollX + rect.left) + 'px';
+        elements.box.style.top  = `${window.scrollY + rect.top}px`;
+        elements.box.style.left = `${window.scrollX + rect.left}px`;
 
-        elements.box.style.width  = rect.width  + 'px';
-        elements.box.style.height = rect.height + 'px';
+        elements.box.style.width  = `${rect.width}px`;
+        elements.box.style.height = `${rect.height}px`;
       }
     },
     click: (event) => {
@@ -100,7 +100,7 @@
         }
       }
     }
-  }
+  };
 
   document.body.addEventListener('mouseover', handlers.mouseover);
   document.body.addEventListener('click', handlers.click, true);
@@ -122,18 +122,18 @@
       selectors.unshift(tag);
 
       if (element.parentElement !== null) {
-        const siblings = Array.prototype.filter.call(element.parentElement.children || [], function (item) {
+        const siblings = Array.prototype.filter.call(element.parentElement.children || [], (item) => {
           return (item.tagName === element.tagName);
         });
 
         if (siblings.length > 1) {
-          selectors[0] += ':nth-of-type(' + (siblings.indexOf(element) + 1) + ')';
+          selectors[0] += `:nth-of-type(${siblings.indexOf(element) + 1})`;
         }
 
         return createSelector(element.parentElement, selectors);
-      };
+      }
     }
 
     return selectors.join(' > ');
-  }
+  };
 }

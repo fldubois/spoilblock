@@ -12,7 +12,7 @@ const select = {
 
         browser.browserAction.setIcon({
           tabId: select.tab.id,
-          path: {
+          path:  {
             '48': 'icons/logo-enabled.svg',
             '96': 'icons/logo-enabled.svg'
           }
@@ -32,7 +32,7 @@ const select = {
 
       browser.browserAction.setIcon({
         tabId: select.tab.id,
-        path: {
+        path:  {
           '48': 'icons/logo.svg',
           '96': 'icons/logo.svg'
         }
@@ -158,7 +158,7 @@ const action = {
     }
   },
 
-  update: function (tab, title, icon, action) {
+  update: function (tab, title, icon, message) {
     browser.pageAction.setTitle({
       tabId: tab.id,
       title: title
@@ -172,7 +172,7 @@ const action = {
       }
     });
 
-    browser.tabs.sendMessage(tab.id, {action: action});
+    browser.tabs.sendMessage(tab.id, {action: message});
   },
 
   enable: function (tab) {
@@ -196,23 +196,23 @@ const action = {
 
 const api = {
   retrieve: function (hostname) {
-    return fetch(API_URL, {
-      method: 'GET',
+    return fetch(`${API_URL}?domain=${hostname}`, {
+      method:  'GET',
       headers: {
         'Accept': 'application/json'
       }
     }).then((response) => {
       if (response.ok) {
         return response.json();
-      } else {
-        return Promise.reject(new Error(`Fail to retrieve spoilers, API returned status ${response.status}`));
       }
+
+      return Promise.reject(new Error(`Fail to retrieve spoilers, API returned status ${response.status}`));
     });
   },
 
   create: function (data) {
     return fetch(API_URL, {
-      method: 'POST',
+      method:  'POST',
       headers: {
         'Accept':       'application/json',
         'Content-type': 'application/json'
@@ -223,9 +223,9 @@ const api = {
         return response.json().then((body) => {
           console.log('Spoiler created', body);
         });
-      } else {
-        console.log('Fail to create spoiler, API returned status ', response.status);
       }
+
+      return Promise.reject(new Error(`Fail to create spoiler, API returned status ${response.status}`));
     }).catch((error) => {
       console.error(error);
     });
@@ -235,12 +235,12 @@ const api = {
 const spoilers = {
   count: function () {
     return browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-      return browser.tabs.sendMessage(tab[0].id, {action: 'spoilers:count'});
+      return browser.tabs.sendMessage(tabs[0].id, {action: 'spoilers:count'});
     });
-  },
+  }
 };
 
-browser.runtime.onMessage.addListener((message, sender, reply) => {
+browser.runtime.onMessage.addListener((message, sender) => {
   if (typeof message === 'object') {
     switch (message.action) {
       case 'selector:enable':  return select.enable();
@@ -253,11 +253,13 @@ browser.runtime.onMessage.addListener((message, sender, reply) => {
       case 'spoilers:count':   return spoilers.count();
     }
   }
+
+  return false;
 });
 
 browser.pageAction.onClicked.addListener(action.toggle);
 
-browser.commands.onCommand.addListener(function (command) {
+browser.commands.onCommand.addListener((command) => {
   switch (command) {
     case 'toggle':
       browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
@@ -277,14 +279,14 @@ browser.commands.onCommand.addListener(function (command) {
 browser.tabs.onActivated.addListener(select.disable);
 browser.webNavigation.onBeforeNavigate.addListener(select.disable);
 
-browser.webRequest.onBeforeRequest.addListener(function (details) {
+browser.webRequest.onBeforeRequest.addListener((details) => {
   if (details.type === 'main_frame' && details.method === 'GET') {
     const url = new URL(details.url);
 
-    api.retrieve(url.hostname).then((spoilers) => {
-      return browser.storage.local.set({[url.hostname]: spoilers});
+    api.retrieve(url.hostname).then((list) => {
+      return browser.storage.local.set({[url.hostname]: list});
     }).catch((error) => {
       console.error(error);
     });
   }
-}, {urls:['<all_urls>']}, ['blocking']);
+}, {urls: ['<all_urls>']}, ['blocking']);

@@ -1,0 +1,28 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "webextensions": true
+  },
+
+  "rules": {
+
+    // Possible Errors
+
+    "no-console": ["off"], // disallow the use of console
+
+    // Best Practices
+
+    "no-magic-numbers": ["error", { "ignore": [-1, 0, 1, 2], "ignoreArrayIndexes": true }], // disallow magic numbers
+
+    // Variables
+
+    "no-shadow":            ["error", { "builtinGlobals": false, "allow": ["enabled"] }], // disallow variable declarations from shadowing variables declared in the outer scope
+    "no-use-before-define": ["off"],                                                      // disallow the use of variables before they are defined
+
+    // Stylistic Issues
+
+    "capitalized-comments": ["error", "always", { "ignorePattern": "i18n" }] // enforce or disallow capitalization of the first letter of a comment
+
+  }
+}

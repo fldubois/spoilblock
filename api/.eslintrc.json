@@ -1,0 +1,28 @@
+{
+  "env": {
+    "es6": true,
+    "node": true
+  },
+
+  "rules": {
+
+    // Node.js and CommonJS
+
+    "callback-return":       ["error", ["callback", "cb", "next", "resolve", "reject"]], // require return statements after callbacks
+    "global-require":        ["off"],                                                    // require require() calls to be placed at top-level module scope
+    "handle-callback-err":   ["error", "^(err|error|.+Error)$"],                         // require error handling in callbacks
+    "no-buffer-constructor": ["error"],                                                  // disallow use of the Buffer() constructor
+    "no-mixed-requires":     ["error", { "grouping": true, "allowCall": true }],         // disallow require calls to be mixed with regular variable declarations
+    "no-new-require":        ["error"],                                                  // disallow new operators with calls to require
+    "no-path-concat":        ["error"],                                                  // disallow string concatenation with __dirname and __filename
+    "no-process-env":        ["off"],                                                    // disallow the use of process.env
+    "no-process-exit":       ["off"],                                                    // disallow the use of process.exit()
+    "no-restricted-modules": ["off"],                                                    // disallow specified modules when loaded by require
+    "no-sync":               ["off"],                                                    // disallow synchronous methods
+
+    // Stylistic Issues
+
+    "new-cap": ["error", { "newIsCap": true, "capIsNew": true, "capIsNewExceptionPattern": "^express\\.." }] // require constructor names to begin with a capital letter
+
+  }
+}

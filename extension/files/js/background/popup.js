@@ -23,7 +23,7 @@ counter.innerText               = browser.i18n.getMessage('popupCounter', 0);
 
 // Global checkbox
 
-switches.global.checkbox.addEventListener('change', function () {
+switches.global.checkbox.addEventListener('change', () => {
   browser.storage.local.set({'toggle:enabled': switches.global.checkbox.checked});
 });
 
@@ -37,7 +37,7 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
   const url      = new URL(tabs[0].url);
   const property = `toggle:${url.hostname}`;
 
-  switches.site.checkbox.addEventListener('change', function () {
+  switches.site.checkbox.addEventListener('change', () => {
     browser.storage.local.set({[property]: switches.site.checkbox.checked});
   });
 
@@ -48,7 +48,7 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
 
 // Report button
 
-button.addEventListener('click', function () {
+button.addEventListener('click', () => {
   browser.runtime.sendMessage({action: 'selector:enable'});
   window.close();
 });

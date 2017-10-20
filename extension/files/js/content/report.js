@@ -24,7 +24,7 @@ browser.runtime.onMessage.addListener((message) => {
 
     img.src = message.dataUrl;
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       img.onload = function () {
         window.createImageBitmap(this, rect.left, rect.top, rect.width, rect.height).then((bitmap) => {
           elements.preview.setAttribute('width',  rect.width);
@@ -34,8 +34,6 @@ browser.runtime.onMessage.addListener((message) => {
 
           elements.selector.innerText = message.selector;
 
-          const size = document.body.getBoundingClientRect();
-
           return resolve({
             width:  document.body.scrollWidth,
             height: document.body.scrollHeight
@@ -43,9 +41,11 @@ browser.runtime.onMessage.addListener((message) => {
         }).catch((error) => {
           console.error(error);
         });
-      }
+      };
     });
   }
+
+  return false;
 });
 
 elements.confirm.addEventListener('click', () => {

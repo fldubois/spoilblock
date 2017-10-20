@@ -11,12 +11,17 @@
     "url": "git+https://github.com/fldubois/spoilblock.git"
   },
   "private": true,
-  "engines" : {
+  "engines": {
     "node": ">=6.0.0",
     "npm": ">=3.0.0"
   },
   "scripts": {
     "api": "cd api && npm run",
-    "ext": "cd extension && npm run"
+    "ext": "cd extension && npm run",
+    "test": "npm run test:lint",
+    "test:lint": "eslint api/lib api/config extension/files/js"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0"
   }
 }
