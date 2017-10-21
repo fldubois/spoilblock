@@ -18,10 +18,6 @@
   "scripts": {
     "api": "cd api && npm run",
     "ext": "cd extension && npm run",
-    "test": "npm run test:lint",
-    "test:lint": "eslint api/lib api/config extension/files/js"
-  },
-  "devDependencies": {
-    "eslint": "^4.9.0"
+    "test": "npm run api test && npm run ext test"
   }
 }

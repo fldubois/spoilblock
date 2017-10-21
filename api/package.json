@@ -17,7 +17,9 @@
   },
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -Rf data/spoilblock* logs/spoilblock-api*",
+    "test": "npm run test:lint",
+    "test:lint": "eslint lib config",
     "start": "node . | bunyan"
   },
   "dependencies": {
@@ -30,5 +32,8 @@
     "pouchdb-find": "^6.3.4",
     "pouchdb-node": "^6.3.4",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.9.0"
   }
 }
