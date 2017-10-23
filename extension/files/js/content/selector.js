@@ -14,13 +14,15 @@
   layer.setAttribute('id', 's8k-select-layer');
 
   layer.innerHTML = `
+    <div id="s8k-select-close">✖</div>
     <div id="s8k-select-box"></div>
   `;
 
   document.body.appendChild(layer);
 
   const elements = {
-    box: layer.querySelector('#s8k-select-box')
+    close: layer.querySelector('#s8k-select-close'),
+    box:   layer.querySelector('#s8k-select-box')
   };
 
   // Event handlers
@@ -38,27 +40,37 @@
       if (selector === null) {
         target = event.target;
 
-        let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+        if (target === elements.close) {
+          elements.box.style.top  = '0px';
+          elements.box.style.left = '0px';
 
-        while (display !== 'block') {
-          target  = target.parentElement;
-          display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+          elements.box.style.width  = '0px';
+          elements.box.style.height = '0px';
+        } else {
+          let display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+
+          while (display !== 'block') {
+            target  = target.parentElement;
+            display = (target.currentStyle ? target.currentStyle : getComputedStyle(target, null)).display;
+          }
+
+          const rect = target.getBoundingClientRect();
+
+          elements.box.style.top  = `${window.scrollY + rect.top}px`;
+          elements.box.style.left = `${window.scrollX + rect.left}px`;
+
+          elements.box.style.width  = `${rect.width}px`;
+          elements.box.style.height = `${rect.height}px`;
         }
-
-        const rect = target.getBoundingClientRect();
-
-        elements.box.style.top  = `${window.scrollY + rect.top}px`;
-        elements.box.style.left = `${window.scrollX + rect.left}px`;
-
-        elements.box.style.width  = `${rect.width}px`;
-        elements.box.style.height = `${rect.height}px`;
       }
     },
     click: (event) => {
       event.stopPropagation();
       event.preventDefault();
 
-      if (selector === null) {
+      if (event.target === elements.close) {
+        browser.runtime.sendMessage({action: 'selector:disable'});
+      } else if (selector === null) {
         selector = createSelector(target);
 
         layer.style.visibility = 'hidden';

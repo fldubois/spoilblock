@@ -10,14 +10,6 @@ const select = {
       browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
         select.tab = tabs.pop();
 
-        browser.browserAction.setIcon({
-          tabId: select.tab.id,
-          path:  {
-            '48': 'icons/logo-enabled.svg',
-            '96': 'icons/logo-enabled.svg'
-          }
-        });
-
         browser.tabs.insertCSS(select.tab.id, {file: 'css/selector.css'});
         browser.tabs.executeScript(select.tab.id, {file: 'js/content/selector.js'});
       }).catch(console.error);
@@ -30,13 +22,9 @@ const select = {
 
       browser.tabs.removeCSS(select.tab.id, {file: 'css/selector.css'});
 
-      browser.browserAction.setIcon({
-        tabId: select.tab.id,
-        path:  {
-          '48': 'icons/logo.svg',
-          '96': 'icons/logo.svg'
-        }
-      });
+      if (report.window !== null) {
+        report.close();
+      }
 
       select.tab = null;
     }
@@ -133,7 +121,9 @@ const report = {
 
 browser.windows.onRemoved.addListener((id) => {
   if (report.window !== null && report.window === id) {
-    browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
+    if (select.tab !== null) {
+      browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
+    }
 
     report.window = null;
   }
