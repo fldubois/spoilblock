@@ -13,8 +13,6 @@
   color: rgba(0, 0, 0, 0);
   text-shadow: unset;
 
-  cursor: pointer;
-
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */
@@ -25,4 +23,26 @@
 
 .s8k-masked * {
   visibility: hidden;
+}
+
+.s8k-masked-close {
+  display: none;
+
+  float: right;
+
+  margin-top:   5px;
+  margin-right: 5px;
+
+  color: #4d4d4f;
+
+  font-size: 1.2rem;
+  line-height: 1.2rem;
+
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.s8k-masked > .s8k-masked-close {
+  display: block;
+  visibility: visible;
 }

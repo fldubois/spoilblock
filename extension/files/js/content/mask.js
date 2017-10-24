@@ -15,14 +15,25 @@ const spoilers = {
     const element = document.querySelector(spoiler.selector);
 
     if (element !== null && spoilers.elements.indexOf(element) === -1) {
-      element.addEventListener('dblclick', (event) => {
-        if (element.classList.contains(CLASS_MASKED)) {
-          event.stopPropagation();
-          event.preventDefault();
+      let close = element.querySelector(`.${CLASS_MASKED}-close`);
 
-          element.classList.remove(CLASS_MASKED);
-        }
-      }, true);
+      if (close === null) {
+        close = document.createElement('div');
+
+        close.classList.add(`${CLASS_MASKED}-close`);
+        close.innerText = '✖';
+
+        close.addEventListener('click', (event) => {
+          if (element.classList.contains(CLASS_MASKED)) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            element.classList.remove(CLASS_MASKED);
+          }
+        }, true);
+
+        element.insertBefore(close, element.firstChild);
+      }
 
       spoilers.elements.push(element);
 
