@@ -30,6 +30,14 @@ const select = {
     }
   },
 
+  toggle: function () {
+    if (select.tab === null) {
+      select.enable();
+    } else {
+      select.disable();
+    }
+  },
+
   capture: function (selector, rect) {
     return browser.tabs.captureVisibleTab().then((dataUrl) => {
       report.open(dataUrl, selector, rect);
@@ -250,19 +258,8 @@ browser.runtime.onMessage.addListener((message, sender) => {
 browser.pageAction.onClicked.addListener(action.toggle);
 
 browser.commands.onCommand.addListener((command) => {
-  switch (command) {
-    case 'toggle':
-      browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-        action.toggle(tabs[0]);
-      });
-      break;
-    case 'report':
-      if (select.tab === null) {
-        select.enable();
-      } else {
-        select.disable();
-      }
-      break;
+  if (command === 'report') {
+    select.toggle();
   }
 });
 

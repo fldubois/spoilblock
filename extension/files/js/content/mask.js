@@ -2,9 +2,11 @@
 
 const CLASS_MASKED = 's8k-masked';
 
+const hostname = window.location.hostname;
+
 const toggles = [
   'toggle:enabled',
-  `toggle:${window.location.hostname}`
+  `toggle:${hostname}`
 ];
 
 const spoilers = {
@@ -64,12 +66,14 @@ const spoilers = {
   }
 };
 
-browser.storage.local.get([...toggles, window.location.hostname]).then((data) => {
+browser.storage.local.get([...toggles, hostname]).then((data) => {
   const enabled = toggles.reduce((enabled, toggle) => {
     return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
   }, true);
 
-  data[window.location.hostname].forEach(spoilers.init);
+  if (Array.isArray(data[hostname])) {
+    data[hostname].forEach(spoilers.init);
+  }
 
   spoilers.enabled = enabled;
 
