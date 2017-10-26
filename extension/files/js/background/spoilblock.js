@@ -174,11 +174,11 @@ const action = {
   },
 
   enable: function (tab) {
-    action.update(tab, browser.i18n.getMessage('pageActionShow'), 'icons/logo-enabled.svg', 'spoilers:hide');
+    action.update(tab, browser.i18n.getMessage('pageActionShow'), 'icons/mask-enabled.svg', 'spoilers:hide');
   },
 
   disable: function (tab) {
-    action.update(tab, browser.i18n.getMessage('pageActionHide'), 'icons/logo.svg', 'spoilers:show');
+    action.update(tab, browser.i18n.getMessage('pageActionHide'), 'icons/mask-disabled.svg', 'spoilers:show');
   },
 
   toggle: function (tab) {
