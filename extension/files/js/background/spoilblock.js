@@ -137,6 +137,28 @@ browser.windows.onRemoved.addListener((id) => {
   }
 });
 
+const toolbar = {
+  update: function (tabId, url) {
+    const hostname = new URL(url).hostname;
+
+    const toggles = [
+      'toggle:enabled',
+      `toggle:${hostname}`
+    ];
+
+    return browser.storage.local.get(toggles).then((data) => {
+      const enabled = toggles.reduce((enabled, toggle) => {
+        return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
+      }, true);
+
+      browser.browserAction.setIcon({
+        tabId: tabId,
+        path:  enabled ? 'icons/spoilblock.svg' : 'icons/spoilblock-disabled.svg'
+      });
+    });
+  }
+};
+
 const action = {
   states: [],
 
@@ -277,3 +299,35 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
     });
   }
 }, {urls: ['<all_urls>']}, ['blocking']);
+
+// Toolbar icon
+
+browser.tabs.onActivated.addListener((details) => {
+  browser.tabs.get(details.tabId).then((tab) => {
+    if (typeof tab.url === 'string') {
+      toolbar.update(tab.id, tab.url);
+    }
+  });
+});
+
+browser.tabs.onUpdated.addListener((tabId, changes) => {
+  if (changes.hasOwnProperty('url')) {
+    toolbar.update(tabId, changes.url);
+  }
+});
+
+browser.webNavigation.onCommitted.addListener((details) => {
+  toolbar.update(details.tabId, details.url);
+});
+
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local') {
+    browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+      const tab = tabs.shift();
+
+      if (typeof tab.url === 'string') {
+        toolbar.update(tab.id, tab.url);
+      }
+    });
+  }
+});
