@@ -29,6 +29,7 @@
 
   let selector = null;
   let target   = null;
+  let throttle = false;
 
   const handlers = {
     mouseover: (event) => {
@@ -51,12 +52,26 @@
 
           const rect = target.getBoundingClientRect();
 
-          elements.box.style.top  = `${window.scrollY + rect.top}px`;
-          elements.box.style.left = `${window.scrollX + rect.left}px`;
+          elements.box.style.top  = `${rect.top}px`;
+          elements.box.style.left = `${rect.left}px`;
 
           elements.box.style.width  = `${rect.width}px`;
           elements.box.style.height = `${rect.height}px`;
         }
+      }
+    },
+    scroll: (event) => {
+      if (throttle === false) {
+        throttle = true;
+
+        window.requestAnimationFrame(() => {
+          const rect = target.getBoundingClientRect();
+
+          elements.box.style.top  = `${rect.top}px`;
+          elements.box.style.left = `${rect.left}px`;
+
+          throttle = false;
+        });
       }
     },
     click: (event) => {
@@ -102,6 +117,8 @@
           document.body.removeEventListener('click',     handlers.click,    true);
           document.body.removeEventListener('keypress',  handlers.keypress, true);
 
+          window.removeEventListener('scroll', handlers.scroll);
+
           browser.runtime.onMessage.removeListener(handlers.message);
         }
       }
@@ -111,6 +128,8 @@
   document.body.addEventListener('mouseover', handlers.mouseover);
   document.body.addEventListener('click',     handlers.click,    true);
   document.body.addEventListener('keypress',  handlers.keypress, true);
+
+  window.addEventListener('scroll', handlers.scroll);
 
   browser.runtime.onMessage.addListener(handlers.message);
 

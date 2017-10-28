@@ -33,7 +33,7 @@ button::-moz-focus-inner {
 /* spoilblock styles */
 
 #s8k-select-layer {
-  position: absolute;
+  position: fixed;
 
   top: 0;
   left: 0;
