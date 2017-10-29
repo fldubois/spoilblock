@@ -3,9 +3,7 @@
 {
   // Set focus
 
-  document.body.setAttribute('tabindex', 0);
-  document.body.focus();
-  document.body.removeAttribute('tabindex');
+  window.focus();
 
   // DOM structure
 
