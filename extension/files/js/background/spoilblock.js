@@ -138,12 +138,13 @@ browser.windows.onRemoved.addListener((id) => {
 });
 
 const toolbar = {
-  update: function (tabId, url) {
-    const hostname = new URL(url).hostname;
+  update: function (tabId, uri) {
+    const url = new URL(uri);
 
     const toggles = [
-      'toggle:enabled',
-      `toggle:${hostname}`
+      'toggle:global',
+      `toggle:site:${url.hostname}`,
+      `toggle:page:${url.href}`
     ];
 
     return browser.storage.local.get(toggles).then((data) => {

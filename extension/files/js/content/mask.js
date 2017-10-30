@@ -5,8 +5,9 @@ const CLASS_MASKED = 's8k-masked';
 const hostname = window.location.hostname;
 
 const toggles = [
-  'toggle:enabled',
-  `toggle:${hostname}`
+  'toggle:global',
+  `toggle:site:${hostname}`,
+  `toggle:page:${window.location.href}`
 ];
 
 const spoilers = {
