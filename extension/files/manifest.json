@@ -46,7 +46,8 @@
   "browser_action": {
     "default_icon": "icons/spoilblock.svg",
     "default_title": "SpoilBlock",
-    "default_popup": "html/popup.html"
+    "default_popup": "html/popup.html",
+    "browser_style": true
   },
 
   "page_action": {

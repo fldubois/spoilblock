@@ -2,21 +2,21 @@
 
 const toggles = {
   global: {
-    label:    document.querySelector('#s8k-menu-switch-global-label'),
-    checkbox: document.querySelector('#s8k-menu-switch-global-checkbox')
+    label:    document.querySelector('#s8k-toggle-global > .text'),
+    checkbox: document.querySelector('#s8k-toggle-global > .checkbox > input')
   },
   site: {
-    label:    document.querySelector('#s8k-menu-switch-site-label'),
-    checkbox: document.querySelector('#s8k-menu-switch-site-checkbox')
+    label:    document.querySelector('#s8k-toggle-site > .text'),
+    checkbox: document.querySelector('#s8k-toggle-site > .checkbox > input')
   },
   page: {
-    label:    document.querySelector('#s8k-menu-switch-page-label'),
-    checkbox: document.querySelector('#s8k-menu-switch-page-checkbox')
+    label:    document.querySelector('#s8k-toggle-page > .text'),
+    checkbox: document.querySelector('#s8k-toggle-page > .checkbox > input')
   }
 };
 
-const button  = document.querySelector('#s8k-menu-report');
-const counter = document.querySelector('#s8k-menu-counter');
+const button  = document.querySelector('#s8k-report');
+const counter = document.querySelector('#s8k-counter');
 
 // i18n
 
@@ -24,7 +24,6 @@ button.innerText               = browser.i18n.getMessage('popupReport');
 toggles.global.label.innerText = browser.i18n.getMessage('popupSwitchGlobal');
 toggles.site.label.innerText   = browser.i18n.getMessage('popupSwitchSite');
 toggles.page.label.innerText   = browser.i18n.getMessage('popupSwitchPage');
-counter.innerText              = browser.i18n.getMessage('popupCounter', 0);
 
 // Global toggle
 
@@ -75,5 +74,5 @@ button.addEventListener('click', () => {
 // Spoilers counter
 
 browser.runtime.sendMessage({action: 'spoilers:count'}).then((count) => {
-  counter.innerText = browser.i18n.getMessage('popupCounter', count);
+  counter.innerText = count;
 });

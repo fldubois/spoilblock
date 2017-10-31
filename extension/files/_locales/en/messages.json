@@ -36,24 +36,13 @@
   },
 
   "popupSwitchSite": {
-    "message": "Hide spoilers on this site",
+    "message": "On this site",
     "description": "Popup site specific switch label"
   },
 
   "popupSwitchPage": {
-    "message": "Hide spoilers on this page",
+    "message": "On this page",
     "description": "Popup page specific switch label"
-  },
-
-  "popupCounter": {
-    "message": "$COUNT$ spoilers on this page",
-    "description": "Number of spoilers reported on the current page",
-    "placeholders": {
-      "count" : {
-        "content" : "$1",
-        "example" : "0"
-      }
-    }
   }
 
 }
