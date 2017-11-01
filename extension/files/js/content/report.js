@@ -16,7 +16,6 @@ elements.title.innerText   = browser.i18n.getMessage('reportTitle');
 elements.confirm.innerText = browser.i18n.getMessage('reportConfirm');
 elements.cancel.innerText  = browser.i18n.getMessage('reportCancel');
 
-
 browser.runtime.onMessage.addListener((message) => {
   if (typeof message === 'object' && message.action === 'report:open') {
     const img  = document.createElement('img');
@@ -55,3 +54,9 @@ elements.confirm.addEventListener('click', () => {
 elements.cancel.addEventListener('click', () => {
   browser.runtime.sendMessage({action: 'report:cancel'});
 });
+
+document.body.addEventListener('keypress', (event) => {
+  if (event.key === 'Escape') {
+    browser.runtime.sendMessage({action: 'report:cancel'});
+  }
+}, true);
