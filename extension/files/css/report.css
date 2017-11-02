@@ -43,9 +43,7 @@ body {
   margin: 0;
   padding: 0.4rem;
 
-  background-color: #393f4c;
-
-  font-family: 'Open Sans Light';
+  font-family: 'Dejavu Sans';
 }
 
 h1 {
@@ -58,15 +56,22 @@ h1 {
   text-shadow: none;
 }
 
+canvas {
+  border: 2px dashed #757873;
+  border-radius: 1px;
+}
+
 div {
   text-align: right;
 }
 
 pre {
+  margin: 0 0 0.5rem 0;
+
   color: #757873;
 
   font-family: 'Consolas','monaco','monospace';
-  font-size: 1rem;
+  font-size: 0.6rem;
 }
 
 button {
