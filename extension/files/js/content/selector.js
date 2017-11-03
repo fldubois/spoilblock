@@ -58,7 +58,7 @@
         }
       }
     },
-    scroll: (event) => {
+    scroll: () => {
       if (throttle === false) {
         throttle = true;
 

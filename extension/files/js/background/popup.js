@@ -31,8 +31,8 @@ toggles.global.checkbox.addEventListener('change', () => {
   browser.storage.local.set({'toggle:global': toggles.global.checkbox.checked});
 });
 
-browser.storage.local.get('toggle:global').then((data) => {
-  toggles.global.checkbox.checked = data.hasOwnProperty('toggle:global') ? data['toggle:global'] : true;
+browser.storage.local.get({'toggle:global': true}).then((data) => {
+  toggles.global.checkbox.checked = data['toggle:global'];
 });
 
 browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
@@ -41,7 +41,7 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
   const properties = {
     site: `toggle:site:${url.hostname}`,
     page: `toggle:page:${url.href}`
-  }
+  };
 
   // Site toggle
 
@@ -49,8 +49,8 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
     browser.storage.local.set({[properties.site]: toggles.site.checkbox.checked});
   });
 
-  browser.storage.local.get(properties.site).then((data) => {
-    toggles.site.checkbox.checked = data.hasOwnProperty(properties.site) ? data[properties.site] : true;
+  browser.storage.local.get({[properties.site]: true}).then((data) => {
+    toggles.site.checkbox.checked = data[properties.site];
   });
 
   // Page toggle
@@ -59,8 +59,8 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
     browser.storage.local.set({[properties.page]: toggles.page.checkbox.checked});
   });
 
-  browser.storage.local.get(properties.page).then((data) => {
-    toggles.page.checkbox.checked = data.hasOwnProperty(properties.page) ? data[properties.page] : true;
+  browser.storage.local.get({[properties.page]: true}).then((data) => {
+    toggles.page.checkbox.checked = data[properties.page];
   });
 });
 
