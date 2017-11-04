@@ -1,0 +1,49 @@
+.s8k-options-row {
+  display: flex;
+
+  box-sizing: border-box;
+
+  margin-top: 1px;
+  margin-bottom: 2px;
+  margin-inline-start: 6px;
+  margin-inline-end: 5px;
+
+  border-top: 1px solid #c1c1c1;
+
+  color: #333;
+
+  font: message-box;
+  font-size: 1.25rem;
+  line-height: 20px;
+  text-shadow: 0 1px 1px #fefffe;
+
+  cursor: default;
+
+  -moz-user-focus: ignore;
+  -moz-user-select: none;
+}
+
+.s8k-options-row:first-child {
+  border-top: none;
+}
+
+.s8k-options-row > span:first-child {
+  flex-grow: 4;
+}
+
+.s8k-options-row > span:last-child {
+  flex-grow: 10;
+}
+
+#s8k-options-url > span:last-child {
+  display: flex;
+}
+
+#s8k-url-input {
+  flex-grow: 10;
+}
+
+#s8k-url-reset {
+  flex-grow: 1;
+  margin-left: 10px;
+}

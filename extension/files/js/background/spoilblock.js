@@ -217,38 +217,42 @@ const action = {
 
 const api = {
   retrieve: function (hostname) {
-    return fetch(`${API_URL}?domain=${hostname}`, {
-      method:  'GET',
-      headers: {
-        'Accept': 'application/json'
-      }
-    }).then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
+    return browser.storage.local.get({'api:url': API_URL}).then((data) => {
+      return fetch(`${data['api:url']}?domain=${hostname}`, {
+        method:  'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
 
-      return Promise.reject(new Error(`Fail to retrieve spoilers, API returned status ${response.status}`));
+        return Promise.reject(new Error(`Fail to retrieve spoilers, API returned status ${response.status}`));
+      });
     });
   },
 
-  create: function (data) {
-    return fetch(API_URL, {
-      method:  'POST',
-      headers: {
-        'Accept':       'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }).then((response) => {
-      if (response.ok) {
-        return response.json().then((body) => {
-          console.log('Spoiler created', body);
-        });
-      }
+  create: function (spoiler) {
+    return browser.storage.local.get({'api:url': API_URL}).then((data) => {
+      return fetch(data['api:url'], {
+        method:  'POST',
+        headers: {
+          'Accept':       'application/json',
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(spoiler)
+      }).then((response) => {
+        if (response.ok) {
+          return response.json().then((body) => {
+            console.log('Spoiler created', body);
+          });
+        }
 
-      return Promise.reject(new Error(`Fail to create spoiler, API returned status ${response.status}`));
-    }).catch((error) => {
-      console.error(error);
+        return Promise.reject(new Error(`Fail to create spoiler, API returned status ${response.status}`));
+      }).catch((error) => {
+        console.error(error);
+      });
     });
   }
 };
