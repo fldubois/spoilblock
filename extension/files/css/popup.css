@@ -117,10 +117,6 @@ html, body {
 
 /* Controls */
 
-#s8k-popup-controls {
-  border-top: 1px solid hsla(210, 4%, 10%, 0.14);
-}
-
 #s8k-popup-controls > button {
   box-sizing: border-box;
 
@@ -131,6 +127,7 @@ html, body {
   padding: 0 10px;
 
   border: none;
+  border-top: 1px solid hsla(210, 4%, 10%, 0.14);
 
   background-color: hsla(0, 0%, 80%, 0.3);
 

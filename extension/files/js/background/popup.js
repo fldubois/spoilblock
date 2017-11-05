@@ -15,12 +15,17 @@ const toggles = {
   }
 };
 
-const button  = document.querySelector('#s8k-report');
+const buttons = {
+  report:  document.querySelector('#s8k-report'),
+  options: document.querySelector('#s8k-options')
+};
+
 const counter = document.querySelector('#s8k-counter');
 
 // i18n
 
-button.innerText               = browser.i18n.getMessage('popupReport');
+buttons.report.innerText       = browser.i18n.getMessage('popupReport');
+buttons.options.innerText      = browser.i18n.getMessage('popupOptions');
 toggles.global.label.innerText = browser.i18n.getMessage('popupSwitchGlobal');
 toggles.site.label.innerText   = browser.i18n.getMessage('popupSwitchSite');
 toggles.page.label.innerText   = browser.i18n.getMessage('popupSwitchPage');
@@ -64,11 +69,19 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
   });
 });
 
-// Report button
+// Buttons
 
-button.addEventListener('click', () => {
+buttons.report.addEventListener('click', () => {
   browser.runtime.sendMessage({action: 'selector:enable'});
   window.close();
+});
+
+buttons.options.addEventListener('click', () => {
+  browser.runtime.openOptionsPage().then(() => {
+    window.close();
+  }).catch((error) => {
+    console.error(error);
+  });
 });
 
 // Spoilers counter

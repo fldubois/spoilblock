@@ -30,6 +30,11 @@
     "description": "Popup report button text"
   },
 
+  "popupOptions": {
+    "message": "Paramètres",
+    "description": "Popup options button text"
+  },
+
   "popupSwitchGlobal": {
     "message": "Cacher les spoilers",
     "description": "Popup global switch label"
