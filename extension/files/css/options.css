@@ -3,10 +3,7 @@
 
   box-sizing: border-box;
 
-  margin-top: 1px;
-  margin-bottom: 2px;
-  margin-inline-start: 6px;
-  margin-inline-end: 5px;
+  padding: 5px 0;
 
   border-top: 1px solid #c1c1c1;
 
@@ -28,22 +25,20 @@
 }
 
 .s8k-options-row > span:first-child {
-  flex-grow: 4;
+  flex-grow: 1;
+  width: 250px;
 }
 
 .s8k-options-row > span:last-child {
-  flex-grow: 10;
-}
-
-#s8k-options-url > span:last-child {
-  display: flex;
+  flex-grow: 3;
+  width: 50%;
 }
 
 #s8k-url-input {
-  flex-grow: 10;
+  width: 50%;
+  margin-right: 10px;
 }
 
-#s8k-url-reset {
-  flex-grow: 1;
-  margin-left: 10px;
+input[type=button] {
+  width: 150px;
 }

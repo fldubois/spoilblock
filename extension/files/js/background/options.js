@@ -6,6 +6,9 @@ const elements = {
   url: {
     input: document.querySelector('#s8k-url-input'),
     reset: document.querySelector('#s8k-url-reset')
+  },
+  preferences: {
+    clear: document.querySelector('#s8k-preferences-clear')
   }
 };
 
@@ -21,5 +24,13 @@ elements.url.input.addEventListener('change', () => {
 elements.url.reset.addEventListener('click', () => {
   browser.storage.local.set({'api:url': API_URL}).then(() => {
     elements.url.input.value = API_URL;
+  });
+});
+
+elements.preferences.clear.addEventListener('click', () => {
+  browser.storage.local.get().then((data) => {
+    const keys = Object.keys(data).filter((key) => key.startsWith('toggle:'));
+
+    browser.storage.local.remove(keys);
   });
 });
