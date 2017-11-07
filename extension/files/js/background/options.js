@@ -4,11 +4,11 @@ const API_URL = 'http://localhost:8080/spoilers';
 
 const elements = {
   url: {
-    input: document.querySelector('#s8k-url-input'),
-    reset: document.querySelector('#s8k-url-reset')
+    input: document.querySelector('#s8k-url-input-text'),
+    reset: document.querySelector('#s8k-url-input-reset')
   },
   preferences: {
-    clear: document.querySelector('#s8k-preferences-clear')
+    clear: document.querySelector('#s8k-preferences-input-clear')
   }
 };
 
