@@ -30,6 +30,11 @@
     "description": "Popup report button text"
   },
 
+  "popupWhitelist": {
+    "message": "Liste blanche",
+    "description": "Popup whitelist button text"
+  },
+
   "popupOptions": {
     "message": "Paramètres",
     "description": "Popup options button text"
@@ -48,6 +53,21 @@
   "popupSwitchPage": {
     "message": "Sur cette page",
     "description": "Popup page specific switch label"
+  },
+
+  "whitelistTitle": {
+    "message": "Spoilblock - Liste blanche",
+    "description": "Whitelist page title"
+  },
+
+  "whitelistSites": {
+    "message": "Domaines autorisés",
+    "description": "Whitelist page sites whitelist title"
+  },
+
+  "whitelistPages": {
+    "message": "Pages autorisées",
+    "description": "Whitelist page pages whitelist title"
   }
 
 }

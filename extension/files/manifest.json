@@ -19,13 +19,14 @@
   "incognito": "spanning",
 
   "permissions": [
+    "<all_urls>",
     "activeTab",
-    "tabs",
+    "history",
     "storage",
+    "tabs",
     "webNavigation",
     "webRequest",
-    "webRequestBlocking",
-    "<all_urls>"
+    "webRequestBlocking"
   ],
 
   "commands": {

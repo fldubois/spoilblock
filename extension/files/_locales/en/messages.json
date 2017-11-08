@@ -30,6 +30,11 @@
     "description": "Popup report button text"
   },
 
+  "popupWhitelist": {
+    "message": "Whitelist",
+    "description": "Popup whitelist button text"
+  },
+
   "popupOptions": {
     "message": "Settings",
     "description": "Popup options button text"
@@ -48,6 +53,21 @@
   "popupSwitchPage": {
     "message": "On this page",
     "description": "Popup page specific switch label"
+  },
+
+  "whitelistTitle": {
+    "message": "Spoilblock - Whitelist",
+    "description": "Whitelist page title"
+  },
+
+  "whitelistSites": {
+    "message": "Authorized domains",
+    "description": "Whitelist page sites whitelist title"
+  },
+
+  "whitelistPages": {
+    "message": "Authorized pages",
+    "description": "Whitelist page pages whitelist title"
   }
 
 }

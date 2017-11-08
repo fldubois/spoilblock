@@ -16,8 +16,9 @@ const toggles = {
 };
 
 const buttons = {
-  report:  document.querySelector('#s8k-report'),
-  options: document.querySelector('#s8k-options')
+  report:    document.querySelector('#s8k-report'),
+  whitelist: document.querySelector('#s8k-whitelist'),
+  options:   document.querySelector('#s8k-options')
 };
 
 const counter = document.querySelector('#s8k-counter');
@@ -25,6 +26,7 @@ const counter = document.querySelector('#s8k-counter');
 // i18n
 
 buttons.report.innerText       = browser.i18n.getMessage('popupReport');
+buttons.whitelist.innerText    = browser.i18n.getMessage('popupWhitelist');
 buttons.options.innerText      = browser.i18n.getMessage('popupOptions');
 toggles.global.label.innerText = browser.i18n.getMessage('popupSwitchGlobal');
 toggles.site.label.innerText   = browser.i18n.getMessage('popupSwitchSite');
@@ -74,6 +76,17 @@ browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
 buttons.report.addEventListener('click', () => {
   browser.runtime.sendMessage({action: 'selector:enable'});
   window.close();
+});
+
+buttons.whitelist.addEventListener('click', () => {
+  const url = browser.extension.getURL('html/whitelist.html');
+
+  browser.tabs.create({url: url}).then(() => {
+    browser.history.deleteUrl({url: url});
+    window.close();
+  }).catch((error) => {
+    console.error(error);
+  });
 });
 
 buttons.options.addEventListener('click', () => {
