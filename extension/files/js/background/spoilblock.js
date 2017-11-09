@@ -1,7 +1,5 @@
 'use strict';
 
-const API_URL = 'http://localhost:8080/spoilers';
-
 const select = {
   tab: null,
 
@@ -111,7 +109,7 @@ const report = {
     };
 
     return report.close().then(() => {
-      return api.create(spoiler);
+      return Spoilblock.api.create(spoiler);
     }).then(() => {
       return Promise.all([
         browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'}),
@@ -215,48 +213,6 @@ const action = {
   }
 };
 
-const api = {
-  retrieve: function (hostname) {
-    return browser.storage.local.get({'api:url': API_URL}).then((data) => {
-      return fetch(`${data['api:url']}?domain=${hostname}`, {
-        method:  'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      }).then((response) => {
-        if (response.ok) {
-          return response.json();
-        }
-
-        return Promise.reject(new Error(`Fail to retrieve spoilers, API returned status ${response.status}`));
-      });
-    });
-  },
-
-  create: function (spoiler) {
-    return browser.storage.local.get({'api:url': API_URL}).then((data) => {
-      return fetch(data['api:url'], {
-        method:  'POST',
-        headers: {
-          'Accept':       'application/json',
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(spoiler)
-      }).then((response) => {
-        if (response.ok) {
-          return response.json().then((body) => {
-            console.log('Spoiler created', body);
-          });
-        }
-
-        return Promise.reject(new Error(`Fail to create spoiler, API returned status ${response.status}`));
-      }).catch((error) => {
-        console.error(error);
-      });
-    });
-  }
-};
-
 const spoilers = {
   count: function () {
     return browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
@@ -297,7 +253,7 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
   if (details.type === 'main_frame' && details.method === 'GET') {
     const url = new URL(details.url);
 
-    api.retrieve(url.hostname).then((list) => {
+    Spoilblock.api.retrieve(url.hostname).then((list) => {
       return browser.storage.local.set({[url.hostname]: list});
     }).catch((error) => {
       console.error(error);
