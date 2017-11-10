@@ -59,6 +59,7 @@
   "background": {
     "scripts": [
       "js/background/api.js",
+      "js/background/selector.js",
       "js/background/spoilblock.js"
     ]
   },

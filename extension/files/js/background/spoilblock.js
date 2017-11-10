@@ -1,50 +1,5 @@
 'use strict';
 
-const select = {
-  tab: null,
-
-  enable: function () {
-    if (select.tab === null) {
-      browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-        select.tab = tabs.pop();
-
-        browser.tabs.insertCSS(select.tab.id, {file: 'css/selector.css'});
-        browser.tabs.executeScript(select.tab.id, {file: 'js/content/selector.js'});
-      }).catch(console.error);
-    }
-  },
-
-  disable: function (event) {
-    if (select.tab !== null && (typeof event === 'undefined' || event.tabId === select.tab.id)) {
-      browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'});
-
-      browser.tabs.removeCSS(select.tab.id, {file: 'css/selector.css'});
-
-      if (report.window !== null) {
-        report.close();
-      }
-
-      select.tab = null;
-    }
-  },
-
-  toggle: function () {
-    if (select.tab === null) {
-      select.enable();
-    } else {
-      select.disable();
-    }
-  },
-
-  capture: function (selector, rect) {
-    return browser.tabs.captureVisibleTab().then((dataUrl) => {
-      report.open(dataUrl, selector, rect);
-    }).catch((error) => {
-      console.error(error);
-    });
-  }
-};
-
 const report = {
   window: null,
 
@@ -100,7 +55,8 @@ const report = {
   },
 
   validate: function (selector) {
-    const url = new URL(select.tab.url);
+    const tab = Spoilblock.selector.getTab();
+    const url = new URL(tab.url);
 
     const spoiler = {
       domain:   url.hostname,
@@ -112,23 +68,23 @@ const report = {
       return Spoilblock.api.create(spoiler);
     }).then(() => {
       return Promise.all([
-        browser.tabs.sendMessage(select.tab.id, {action: 'selector:disable'}),
-        browser.tabs.sendMessage(select.tab.id, {action: 'spoilers:add', spoiler: spoiler})
+        browser.tabs.sendMessage(tab.id, {action: 'selector:disable'}),
+        browser.tabs.sendMessage(tab.id, {action: 'spoilers:add', spoiler: spoiler})
       ]);
     });
   },
 
   cancel: function () {
     return report.close().then(() => {
-      return browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
+      return browser.tabs.sendMessage(Spoilblock.selector.getTabId(), {action: 'selector:cancel'});
     });
   }
 };
 
 browser.windows.onRemoved.addListener((id) => {
   if (report.window !== null && report.window === id) {
-    if (select.tab !== null) {
-      browser.tabs.sendMessage(select.tab.id, {action: 'selector:cancel'});
+    if (Spoilblock.selector.isActive()) {
+      browser.tabs.sendMessage(Spoilblock.selector.getTabId(), {action: 'selector:cancel'});
     }
 
     report.window = null;
@@ -224,9 +180,6 @@ const spoilers = {
 browser.runtime.onMessage.addListener((message, sender) => {
   if (typeof message === 'object') {
     switch (message.action) {
-      case 'selector:enable':  return select.enable();
-      case 'selector:disable': return select.disable();
-      case 'selector:capture': return select.capture(message.selector, message.rect);
       case 'action:show':      return action.show(sender.tab);
       case 'action:hide':      return action.hide(sender.tab);
       case 'report:validate':  return report.validate(message.selector);
@@ -242,12 +195,12 @@ browser.pageAction.onClicked.addListener(action.toggle);
 
 browser.commands.onCommand.addListener((command) => {
   if (command === 'report') {
-    select.toggle();
+    Spoilblock.selector.toggle();
   }
 });
 
-browser.tabs.onActivated.addListener(select.disable);
-browser.webNavigation.onBeforeNavigate.addListener(select.disable);
+browser.tabs.onActivated.addListener(Spoilblock.selector.disable);
+browser.webNavigation.onBeforeNavigate.addListener(Spoilblock.selector.disable);
 
 browser.webRequest.onBeforeRequest.addListener((details) => {
   if (details.type === 'main_frame' && details.method === 'GET') {
