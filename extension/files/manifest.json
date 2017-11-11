@@ -60,6 +60,7 @@
     "scripts": [
       "js/background/api.js",
       "js/background/selector.js",
+      "js/background/report.js",
       "js/background/spoilblock.js"
     ]
   },

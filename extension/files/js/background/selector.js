@@ -30,8 +30,8 @@ Spoilblock.selector = (function () {
 
       browser.tabs.removeCSS(target.id, {file: 'css/selector.css'});
 
-      if (report.window !== null) {
-        report.close();
+      if (Spoilblock.report.isOpen()) {
+        Spoilblock.report.close();
       }
 
       target = null;
@@ -48,12 +48,11 @@ Spoilblock.selector = (function () {
 
   const capture = function (selector, rect) {
     return browser.tabs.captureVisibleTab().then((dataUrl) => {
-      report.open(dataUrl, selector, rect);
+      Spoilblock.report.open(dataUrl, selector, rect);
     }).catch((error) => {
       console.error(error);
     });
   };
-
 
   // Messages handlers
 
