@@ -1,28 +1,5 @@
 'use strict';
 
-const toolbar = {
-  update: function (tabId, uri) {
-    const url = new URL(uri);
-
-    const toggles = [
-      'toggle:global',
-      `toggle:site:${url.hostname}`,
-      `toggle:page:${url.href}`
-    ];
-
-    return browser.storage.local.get(toggles).then((data) => {
-      const enabled = toggles.reduce((enabled, toggle) => {
-        return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
-      }, true);
-
-      browser.browserAction.setIcon({
-        tabId: tabId,
-        path:  enabled ? 'icons/spoilblock.svg' : 'icons/spoilblock-disabled.svg'
-      });
-    });
-  }
-};
-
 const action = {
   states: [],
 
@@ -126,19 +103,19 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
 browser.tabs.onActivated.addListener((details) => {
   browser.tabs.get(details.tabId).then((tab) => {
     if (typeof tab.url === 'string') {
-      toolbar.update(tab.id, tab.url);
+      Spoilblock.toolbar.update(tab.id, tab.url);
     }
   });
 });
 
 browser.tabs.onUpdated.addListener((tabId, changes) => {
   if (changes.hasOwnProperty('url')) {
-    toolbar.update(tabId, changes.url);
+    Spoilblock.toolbar.update(tabId, changes.url);
   }
 });
 
 browser.webNavigation.onCommitted.addListener((details) => {
-  toolbar.update(details.tabId, details.url);
+  Spoilblock.toolbar.update(details.tabId, details.url);
 });
 
 browser.storage.onChanged.addListener((changes, area) => {
@@ -147,7 +124,7 @@ browser.storage.onChanged.addListener((changes, area) => {
       const tab = tabs.shift();
 
       if (typeof tab.url === 'string') {
-        toolbar.update(tab.id, tab.url);
+        Spoilblock.toolbar.update(tab.id, tab.url);
       }
     });
   }
