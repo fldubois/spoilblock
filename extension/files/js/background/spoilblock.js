@@ -1,60 +1,5 @@
 'use strict';
 
-const action = {
-  states: [],
-
-  show: function (tab) {
-    if (typeof tab === 'object' && tab.active === true) {
-      browser.pageAction.show(tab.id);
-
-      action.states[tab.id] = true;
-
-      action.enable(tab);
-    }
-  },
-
-  hide: function (tab) {
-    if (typeof tab === 'object' && tab.active === true) {
-      browser.pageAction.hide(tab.id);
-    }
-  },
-
-  update: function (tab, title, icon, message) {
-    browser.pageAction.setTitle({
-      tabId: tab.id,
-      title: title
-    });
-
-    browser.pageAction.setIcon({
-      tabId: tab.id,
-      path:  {
-        '48': icon,
-        '96': icon
-      }
-    });
-
-    browser.tabs.sendMessage(tab.id, {action: message});
-  },
-
-  enable: function (tab) {
-    action.update(tab, browser.i18n.getMessage('pageActionShow'), 'icons/mask-enabled.svg', 'spoilers:hide');
-  },
-
-  disable: function (tab) {
-    action.update(tab, browser.i18n.getMessage('pageActionHide'), 'icons/mask-disabled.svg', 'spoilers:show');
-  },
-
-  toggle: function (tab) {
-    if (action.states[tab.id] === true) {
-      action.disable(tab);
-    } else {
-      action.enable(tab);
-    }
-
-    action.states[tab.id] = !action.states[tab.id];
-  }
-};
-
 const spoilers = {
   count: function () {
     return browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
@@ -66,8 +11,6 @@ const spoilers = {
 browser.runtime.onMessage.addListener((message, sender) => {
   if (typeof message === 'object') {
     switch (message.action) {
-      case 'action:show':      return action.show(sender.tab);
-      case 'action:hide':      return action.hide(sender.tab);
       case 'spoilers:count':   return spoilers.count();
     }
   }
@@ -75,7 +18,7 @@ browser.runtime.onMessage.addListener((message, sender) => {
   return false;
 });
 
-browser.pageAction.onClicked.addListener(action.toggle);
+browser.pageAction.onClicked.addListener(Spoilblock.action.toggle);
 
 browser.commands.onCommand.addListener((command) => {
   if (command === 'report') {

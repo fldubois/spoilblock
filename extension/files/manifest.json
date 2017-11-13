@@ -58,11 +58,12 @@
 
   "background": {
     "scripts": [
+      "js/background/action.js",
       "js/background/api.js",
       "js/background/report.js",
       "js/background/selector.js",
-      "js/background/toolbar.js",
-      "js/background/spoilblock.js"
+      "js/background/spoilblock.js",
+      "js/background/toolbar.js"
     ]
   },
 

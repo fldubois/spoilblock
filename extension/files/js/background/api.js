@@ -1,7 +1,5 @@
 'use strict';
 
-const Spoilblock = {};
-
 Spoilblock.api = (function () {
   // Constants
 
