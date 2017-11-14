@@ -63,6 +63,7 @@
       "js/background/report.js",
       "js/background/selector.js",
       "js/background/spoilblock.js",
+      "js/background/spoilers.js",
       "js/background/toolbar.js"
     ]
   },

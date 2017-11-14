@@ -1,23 +1,5 @@
 'use strict';
 
-const spoilers = {
-  count: function () {
-    return browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-      return browser.tabs.sendMessage(tabs[0].id, {action: 'spoilers:count'});
-    });
-  }
-};
-
-browser.runtime.onMessage.addListener((message, sender) => {
-  if (typeof message === 'object') {
-    switch (message.action) {
-      case 'spoilers:count':   return spoilers.count();
-    }
-  }
-
-  return false;
-});
-
 browser.pageAction.onClicked.addListener(Spoilblock.action.toggle);
 
 browser.commands.onCommand.addListener((command) => {
