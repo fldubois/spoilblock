@@ -1,6 +1,32 @@
 'use strict';
 
+// Messages handlers
+
+browser.runtime.onMessage.addListener((message, sender) => {
+  if (typeof message === 'object') {
+    switch (message.action) {
+      case 'action:hide':      return Spoilblock.action.hide(sender.tab);
+      case 'action:show':      return Spoilblock.action.show(sender.tab);
+      case 'api:get':          return Spoilblock.api.getUrl();
+      case 'api:reset':        return Spoilblock.api.setUrl(DEFAULT_URL);
+      case 'api:set':          return Spoilblock.api.setUrl(message.value);
+      case 'report:cancel':    return Spoilblock.report.cancel();
+      case 'report:validate':  return Spoilblock.report.validate(message.selector);
+      case 'selector:capture': return Spoilblock.selector.capture(message.selector, message.rect);
+      case 'selector:disable': return Spoilblock.selector.disable();
+      case 'selector:enable':  return Spoilblock.selector.enable();
+      case 'spoilers:count':   return Spoilblock.spoilers.count();
+    }
+  }
+
+  return false;
+});
+
+// Browser action
+
 browser.pageAction.onClicked.addListener(Spoilblock.action.toggle);
+
+// Selector
 
 browser.commands.onCommand.addListener((command) => {
   if (command === 'report') {
@@ -10,6 +36,22 @@ browser.commands.onCommand.addListener((command) => {
 
 browser.tabs.onActivated.addListener(Spoilblock.selector.disable);
 browser.webNavigation.onBeforeNavigate.addListener(Spoilblock.selector.disable);
+
+// Report
+
+browser.windows.onRemoved.addListener((id) => {
+  if (Spoilblock.report.popup === id) {
+    if (Spoilblock.selector.isEnabled()) {
+      const tab = Spoilblock.selector.getTab();
+
+      browser.tabs.sendMessage(tab.id, {action: 'selector:cancel'});
+    }
+
+    Spoilblock.report.popup = null;
+  }
+});
+
+// API requests
 
 browser.webRequest.onBeforeRequest.addListener((details) => {
   if (details.type === 'main_frame' && details.method === 'GET') {
