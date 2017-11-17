@@ -1,15 +1,14 @@
 'use strict';
 
 Spoilblock.api = (function () {
-
   const STORAGE_KEY = 'api:url';
   const DEFAULT_URL = 'http://localhost:8080/spoilers';
 
   return {
     // Constants
 
-    STORAGE_KEY,
-    DEFAULT_URL,
+    STORAGE_KEY: STORAGE_KEY,
+    DEFAULT_URL: DEFAULT_URL,
 
     // Methods
 
@@ -61,5 +60,5 @@ Spoilblock.api = (function () {
       });
     }
 
-  }
+  };
 })();

@@ -26,18 +26,18 @@ elements.pages.input.value = '';
 browser.storage.local.get().then((data) => {
   Object.keys(data).forEach((key) => {
     if (key.startsWith('toggle:site') && data[key] === false) {
-      elements.sites.input.value += `${key.substring(12)}\n`;
+      elements.sites.input.value += `${key.replace('toggle:site:', '')}\n`;
     }
 
     if (key.startsWith('toggle:page') && data[key] === false) {
-      elements.pages.input.value += `${key.substring(12)}\n`;
+      elements.pages.input.value += `${key.replace('toggle:page:', '')}\n`;
     }
   });
 });
 
 // Update
 
-var updateWhitelist = function (scope, values) {
+const updateWhitelist = function (scope, values) {
   const toggles = {};
 
   values.forEach((value) => {
@@ -61,7 +61,7 @@ var updateWhitelist = function (scope, values) {
   }).catch((error) => {
     console.error(error);
   });
-}
+};
 
 elements.sites.input.addEventListener('blur', () => {
   updateWhitelist('site', elements.sites.input.value.split('\n'));

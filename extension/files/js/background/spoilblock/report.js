@@ -94,5 +94,5 @@ Spoilblock.report = (function () {
         return browser.tabs.sendMessage(tab.id, {action: 'selector:cancel'});
       });
     }
-  }
+  };
 })();

@@ -7,5 +7,5 @@ Spoilblock.spoilers = (function () {
         return browser.tabs.sendMessage(tabs[0].id, {action: 'spoilers:count'});
       });
     }
-  }
+  };
 })();

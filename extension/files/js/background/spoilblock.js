@@ -2,21 +2,23 @@
 
 // Messages handlers
 
+const handlers = {
+  'action:hide':      ({sender})  => Spoilblock.action.hide(sender.tab),
+  'action:show':      ({sender})  => Spoilblock.action.show(sender.tab),
+  'api:get':          ()          => Spoilblock.api.getUrl(),
+  'api:reset':        ()          => Spoilblock.api.setUrl(Spoilblock.api.DEFAULT_URL),
+  'api:set':          ({message}) => Spoilblock.api.setUrl(message.value),
+  'report:cancel':    ()          => Spoilblock.report.cancel(),
+  'report:validate':  ({message}) => Spoilblock.report.validate(message.selector),
+  'selector:capture': ({message}) => Spoilblock.selector.capture(message.selector, message.rect),
+  'selector:disable': ()          => Spoilblock.selector.disable(),
+  'selector:enable':  ()          => Spoilblock.selector.enable(),
+  'spoilers:count':   ()          => Spoilblock.spoilers.count()
+};
+
 browser.runtime.onMessage.addListener((message, sender) => {
-  if (typeof message === 'object') {
-    switch (message.action) {
-      case 'action:hide':      return Spoilblock.action.hide(sender.tab);
-      case 'action:show':      return Spoilblock.action.show(sender.tab);
-      case 'api:get':          return Spoilblock.api.getUrl();
-      case 'api:reset':        return Spoilblock.api.setUrl(DEFAULT_URL);
-      case 'api:set':          return Spoilblock.api.setUrl(message.value);
-      case 'report:cancel':    return Spoilblock.report.cancel();
-      case 'report:validate':  return Spoilblock.report.validate(message.selector);
-      case 'selector:capture': return Spoilblock.selector.capture(message.selector, message.rect);
-      case 'selector:disable': return Spoilblock.selector.disable();
-      case 'selector:enable':  return Spoilblock.selector.enable();
-      case 'spoilers:count':   return Spoilblock.spoilers.count();
-    }
+  if (typeof message === 'object' && handlers.hasOwnProperty(message.action)) {
+    return handlers[message.action]({message, sender});
   }
 
   return false;

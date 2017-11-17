@@ -22,5 +22,5 @@ Spoilblock.toolbar = (function () {
         });
       });
     }
-  }
+  };
 })();

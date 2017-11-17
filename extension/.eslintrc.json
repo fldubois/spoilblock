@@ -5,6 +5,10 @@
     "webextensions": true
   },
 
+  "globals": {
+    "Spoilblock": true
+  },
+
   "rules": {
 
     // Possible Errors

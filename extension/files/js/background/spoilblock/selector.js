@@ -52,5 +52,5 @@ Spoilblock.selector = (function () {
         console.error(error);
       });
     }
-  }
+  };
 })();

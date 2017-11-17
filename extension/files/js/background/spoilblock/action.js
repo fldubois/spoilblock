@@ -3,7 +3,7 @@
 const Spoilblock = {};
 
 Spoilblock.action = (function () {
-  let states = [];
+  const states = [];
 
   return {
     show: (tab) => {
@@ -56,5 +56,5 @@ Spoilblock.action = (function () {
 
       states[tab.id] = !states[tab.id];
     }
-  }
+  };
 })();
