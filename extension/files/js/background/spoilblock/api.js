@@ -1,27 +1,17 @@
 'use strict';
 
 Spoilblock.api = (function () {
-  const STORAGE_KEY = 'api:url';
   const DEFAULT_URL = 'http://localhost:8080/spoilers';
 
   return {
     // Constants
 
-    STORAGE_KEY: STORAGE_KEY,
     DEFAULT_URL: DEFAULT_URL,
 
     // Methods
 
-    getUrl: () => {
-      return browser.storage.local.get({[STORAGE_KEY]: DEFAULT_URL}).then((data) => data[STORAGE_KEY]);
-    },
-
-    setUrl: (url) => {
-      return browser.storage.local.set({[STORAGE_KEY]: url}).then(() => url);
-    },
-
     retrieve: (hostname) => {
-      return Spoilblock.api.getUrl().then((url) => {
+      return Spoilblock.settings.api.get().then((url) => {
         return fetch(`${url}?domain=${hostname}`, {
           method:  'GET',
           headers: {
@@ -38,7 +28,7 @@ Spoilblock.api = (function () {
     },
 
     create: (spoiler) => {
-      return Spoilblock.api.getUrl().then((url) => {
+      return Spoilblock.settings.api.get().then((url) => {
         return fetch(url, {
           method:  'POST',
           headers: {

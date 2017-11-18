@@ -5,9 +5,9 @@
 const handlers = {
   'action:hide':      ({sender})  => Spoilblock.action.hide(sender.tab),
   'action:show':      ({sender})  => Spoilblock.action.show(sender.tab),
-  'api:get':          ()          => Spoilblock.api.getUrl(),
-  'api:reset':        ()          => Spoilblock.api.setUrl(Spoilblock.api.DEFAULT_URL),
-  'api:set':          ({message}) => Spoilblock.api.setUrl(message.value),
+  'api:get':          ()          => Spoilblock.settings.api.get(),
+  'api:reset':        ()          => Spoilblock.settings.api.set(Spoilblock.api.DEFAULT_URL),
+  'api:set':          ({message}) => Spoilblock.settings.api.set(message.value),
   'report:cancel':    ()          => Spoilblock.report.cancel(),
   'report:validate':  ({message}) => Spoilblock.report.validate(message.selector),
   'selector:capture': ({message}) => Spoilblock.selector.capture(message.selector, message.rect),
