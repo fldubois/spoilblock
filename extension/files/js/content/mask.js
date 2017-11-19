@@ -67,14 +67,15 @@ const spoilers = {
   }
 };
 
-browser.storage.local.get([...toggles, hostname]).then((data) => {
+Promise.all([
+  browser.runtime.sendMessage({action: 'spoilers:get', hostname: hostname}),
+  browser.storage.local.get(toggles)
+]).then(([list, data]) => {
+  list.forEach(spoilers.init);
+
   const enabled = toggles.reduce((enabled, toggle) => {
     return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
   }, true);
-
-  if (Array.isArray(data[hostname])) {
-    data[hostname].forEach(spoilers.init);
-  }
 
   spoilers.enabled = enabled;
 

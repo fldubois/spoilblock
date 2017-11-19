@@ -13,6 +13,14 @@ Spoilblock.settings = (function () {
       get: () => {
         return browser.storage.local.get({[KEYS.API]: Spoilblock.api.DEFAULT_URL}).then((data) => data[KEYS.API]);
       }
+    },
+    spoilers: {
+      set: (hostname, spoilers) => {
+        return browser.storage.local.set({[hostname]: spoilers}).then(() => spoilers);
+      },
+      get: (hostname) => {
+        return browser.storage.local.get({[hostname]: []}).then((data) => data[hostname]);
+      }
     }
   };
 })();

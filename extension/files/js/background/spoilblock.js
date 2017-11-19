@@ -13,7 +13,8 @@ const handlers = {
   'selector:capture': ({message}) => Spoilblock.selector.capture(message.selector, message.rect),
   'selector:disable': ()          => Spoilblock.selector.disable(),
   'selector:enable':  ()          => Spoilblock.selector.enable(),
-  'spoilers:count':   ()          => Spoilblock.spoilers.count()
+  'spoilers:count':   ()          => Spoilblock.spoilers.count(),
+  'spoilers:get':     ({message}) => Spoilblock.settings.spoilers.get(message.hostname)
 };
 
 browser.runtime.onMessage.addListener((message, sender) => {
@@ -57,10 +58,10 @@ browser.windows.onRemoved.addListener((id) => {
 
 browser.webRequest.onBeforeRequest.addListener((details) => {
   if (details.type === 'main_frame' && details.method === 'GET') {
-    const url = new URL(details.url);
+    const hostname = new URL(details.url).hostname;
 
-    Spoilblock.api.retrieve(url.hostname).then((list) => {
-      return browser.storage.local.set({[url.hostname]: list});
+    Spoilblock.api.retrieve(hostname).then((spoilers) => {
+      return Spoilblock.settings.spoilers.set(hostname, spoilers);
     }).catch((error) => {
       console.error(error);
     });
