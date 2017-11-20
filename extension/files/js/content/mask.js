@@ -5,7 +5,6 @@ const CLASS_MASKED = 's8k-masked';
 const hostname = window.location.hostname;
 
 const toggles = [
-  'toggle:global',
   `toggle:site:${hostname}`,
   `toggle:page:${window.location.href}`
 ];
@@ -69,13 +68,14 @@ const spoilers = {
 
 Promise.all([
   browser.runtime.sendMessage({action: 'spoilers:get', hostname: hostname}),
+  browser.runtime.sendMessage({action: 'toggle:get'}),
   browser.storage.local.get(toggles)
-]).then(([list, data]) => {
+]).then(([list, toggle, data]) => {
   list.forEach(spoilers.init);
 
   const enabled = toggles.reduce((enabled, toggle) => {
     return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
-  }, true);
+  }, toggle);
 
   spoilers.enabled = enabled;
 
@@ -85,13 +85,16 @@ Promise.all([
   }
 });
 
+// TODO: Use messages from background scripts
 browser.storage.onChanged.addListener((changes, area) => {
   if (area === 'local') {
-    browser.storage.local.get(toggles).then((data) => {
+    const properties = [...toggles, 'toggle:global'];
+
+    browser.storage.local.get(properties).then((data) => {
       let changed = false;
       let enabled = true;
 
-      toggles.forEach((toggle) => {
+      properties.forEach((toggle) => {
         if (changes.hasOwnProperty(toggle)) {
           changed = true;
           enabled = enabled && changes[toggle].newValue;

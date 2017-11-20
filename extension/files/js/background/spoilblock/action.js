@@ -5,6 +5,7 @@ const Spoilblock = {};
 Spoilblock.action = (function () {
   const states = [];
 
+  // TODO: Update browser action visibility on toggle/whitelist/tab update
   return {
     show: (tab) => {
       if (typeof tab === 'object' && tab.active === true) {

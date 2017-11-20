@@ -6,15 +6,17 @@ Spoilblock.toolbar = (function () {
       const url = new URL(uri);
 
       const toggles = [
-        'toggle:global',
         `toggle:site:${url.hostname}`,
         `toggle:page:${url.href}`
       ];
 
-      return browser.storage.local.get(toggles).then((data) => {
+      return Promise.all([
+        Spoilblock.settings.toggle.get(),
+        browser.storage.local.get(toggles)
+      ]).then(([toggle, data]) => {
         const enabled = toggles.reduce((enabled, toggle) => {
           return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
-        }, true);
+        }, toggle);
 
         browser.browserAction.setIcon({
           tabId: tabId,

@@ -35,11 +35,11 @@ toggles.page.label.innerText   = browser.i18n.getMessage('popupSwitchPage');
 // Global toggle
 
 toggles.global.checkbox.addEventListener('change', () => {
-  browser.storage.local.set({'toggle:global': toggles.global.checkbox.checked});
+  browser.runtime.sendMessage({action: 'toggle:set', value: toggles.global.checkbox.checked});
 });
 
-browser.storage.local.get({'toggle:global': true}).then((data) => {
-  toggles.global.checkbox.checked = data['toggle:global'];
+browser.runtime.sendMessage({action: 'toggle:get'}).then((value) => {
+  toggles.global.checkbox.checked = value;
 });
 
 browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
