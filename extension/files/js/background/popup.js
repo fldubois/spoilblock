@@ -43,31 +43,29 @@ browser.runtime.sendMessage({action: 'toggle:get'}).then((value) => {
 });
 
 browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-  const url = new URL(tabs[0].url);
-
-  const properties = {
-    site: `toggle:site:${url.hostname}`,
-    page: `toggle:page:${url.href}`
-  };
-
-  // Site toggle
+  const url = tabs[0].url;
 
   toggles.site.checkbox.addEventListener('change', () => {
-    browser.storage.local.set({[properties.site]: toggles.site.checkbox.checked});
+    browser.runtime.sendMessage({
+      action: 'whitelist:set',
+      url:    url,
+      scope:  'site',
+      values: toggles.site.checkbox.checked
+    });
   });
-
-  browser.storage.local.get({[properties.site]: true}).then((data) => {
-    toggles.site.checkbox.checked = data[properties.site];
-  });
-
-  // Page toggle
 
   toggles.page.checkbox.addEventListener('change', () => {
-    browser.storage.local.set({[properties.page]: toggles.page.checkbox.checked});
+    browser.runtime.sendMessage({
+      action: 'whitelist:set',
+      url:    url,
+      scope:  'page',
+      values: toggles.page.checkbox.checked
+    });
   });
 
-  browser.storage.local.get({[properties.page]: true}).then((data) => {
-    toggles.page.checkbox.checked = data[properties.page];
+  browser.runtime.sendMessage({action: 'whitelist:get', url: url}).then((whitelist) => {
+    toggles.site.checkbox.checked = whitelist.site;
+    toggles.page.checkbox.checked = whitelist.page;
   });
 });
 

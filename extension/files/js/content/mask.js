@@ -2,13 +2,6 @@
 
 const CLASS_MASKED = 's8k-masked';
 
-const hostname = window.location.hostname;
-
-const toggles = [
-  `toggle:site:${hostname}`,
-  `toggle:page:${window.location.href}`
-];
-
 const spoilers = {
   elements: [],
   enabled:  false,
@@ -67,19 +60,15 @@ const spoilers = {
 };
 
 Promise.all([
-  browser.runtime.sendMessage({action: 'spoilers:get', hostname: hostname}),
+  browser.runtime.sendMessage({action: 'spoilers:get', hostname: window.location.hostname}),
   browser.runtime.sendMessage({action: 'toggle:get'}),
-  browser.storage.local.get(toggles)
-]).then(([list, toggle, data]) => {
+  browser.runtime.sendMessage({action: 'whitelist:get', url: window.location.href}),
+]).then(([list, toggle, whitelist]) => {console.log('whitelist', whitelist);
   list.forEach(spoilers.init);
 
-  const enabled = toggles.reduce((enabled, toggle) => {
-    return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
-  }, toggle);
+  spoilers.enabled = toggle && whitelist.enabled;
 
-  spoilers.enabled = enabled;
-
-  if (enabled === true && spoilers.elements.length > 0) {
+  if (spoilers.enabled === true && spoilers.elements.length > 0) {
     spoilers.hide();
     browser.runtime.sendMessage({action: 'action:show'});
   }
@@ -88,7 +77,11 @@ Promise.all([
 // TODO: Use messages from background scripts
 browser.storage.onChanged.addListener((changes, area) => {
   if (area === 'local') {
-    const properties = [...toggles, 'toggle:global'];
+    const properties = [
+      'toggle:global',
+      `toggle:site:${window.location.hostname}`,
+      `toggle:page:${window.location.href}`
+    ];
 
     browser.storage.local.get(properties).then((data) => {
       let changed = false;

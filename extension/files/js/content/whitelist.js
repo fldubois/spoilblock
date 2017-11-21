@@ -23,42 +23,15 @@ elements.pages.title.innerText = browser.i18n.getMessage('whitelistPages');
 elements.sites.input.value = '';
 elements.pages.input.value = '';
 
-browser.storage.local.get().then((data) => {
-  Object.keys(data).forEach((key) => {
-    if (key.startsWith('toggle:site') && data[key] === false) {
-      elements.sites.input.value += `${key.replace('toggle:site:', '')}\n`;
-    }
-
-    if (key.startsWith('toggle:page') && data[key] === false) {
-      elements.pages.input.value += `${key.replace('toggle:page:', '')}\n`;
-    }
-  });
+browser.runtime.sendMessage({action: 'whitelist:get'}).then((whitelist) => {
+  elements.sites.input.value = whitelist.sites.join('\n');
+  elements.pages.input.value = whitelist.pages.join('\n');
 });
 
 // Update
 
 const updateWhitelist = function (scope, values) {
-  const toggles = {};
-
-  values.forEach((value) => {
-    if (value.length > 0) {
-      toggles[`toggle:${scope}:${value}`] = false;
-    }
-  });
-
-  browser.storage.local.get().then((data) => {
-    Object.keys(data).forEach((key) => {
-      if (key.startsWith(`toggle:${scope}`)) {
-        delete data[key];
-      }
-    });
-
-    Object.assign(data, toggles);
-
-    return browser.storage.local.clear().then(() => {
-      return browser.storage.local.set(data);
-    });
-  }).catch((error) => {
+  return browser.runtime.sendMessage({action: 'whitelist:set', scope: scope, values: values}).catch((error) => {
     console.error(error);
   });
 };

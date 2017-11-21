@@ -65,6 +65,7 @@
       "js/background/spoilblock/settings.js",
       "js/background/spoilblock/spoilers.js",
       "js/background/spoilblock/toolbar.js",
+      "js/background/spoilblock/whitelist.js",
       "js/background/spoilblock.js"
     ]
   },

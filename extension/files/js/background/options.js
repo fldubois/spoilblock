@@ -25,9 +25,8 @@ elements.url.reset.addEventListener('click', () => {
 });
 
 elements.preferences.clear.addEventListener('click', () => {
-  browser.storage.local.get().then((data) => {
-    const keys = Object.keys(data).filter((key) => key.startsWith('toggle:'));
-
-    browser.storage.local.remove(keys);
-  });
+  Promise.all([
+    browser.runtime.sendMessage({action: 'toggle:set', value: true}),
+    browser.runtime.sendMessage({action: 'whitelist:clear'})
+  ]);
 });

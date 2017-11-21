@@ -2,21 +2,12 @@
 
 Spoilblock.toolbar = (function () {
   return {
-    update: (tabId, uri) => {
-      const url = new URL(uri);
-
-      const toggles = [
-        `toggle:site:${url.hostname}`,
-        `toggle:page:${url.href}`
-      ];
-
+    update: (tabId, url) => {
       return Promise.all([
         Spoilblock.settings.toggle.get(),
-        browser.storage.local.get(toggles)
-      ]).then(([toggle, data]) => {
-        const enabled = toggles.reduce((enabled, toggle) => {
-          return enabled && (!data.hasOwnProperty(toggle) || data[toggle] === true);
-        }, toggle);
+        Spoilblock.whitelist.get({url: url})
+      ]).then(([toggle, whitelist]) => {
+        const enabled = toggle && whitelist.enabled;
 
         browser.browserAction.setIcon({
           tabId: tabId,

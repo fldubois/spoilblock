@@ -16,7 +16,10 @@ const handlers = {
   'selector:disable': ()          => Spoilblock.selector.disable(),
   'selector:enable':  ()          => Spoilblock.selector.enable(),
   'spoilers:count':   ()          => Spoilblock.spoilers.count(),
-  'spoilers:get':     ({message}) => Spoilblock.settings.spoilers.get(message.hostname)
+  'spoilers:get':     ({message}) => Spoilblock.settings.spoilers.get(message.hostname),
+  'whitelist:clear':  ()          => Spoilblock.whitelist.clear(),
+  'whitelist:get':    ({message}) => Spoilblock.whitelist.get(message),
+  'whitelist:set':    ({message}) => Spoilblock.whitelist.set(message)
 };
 
 browser.runtime.onMessage.addListener((message, sender) => {
