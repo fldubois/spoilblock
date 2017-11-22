@@ -24,6 +24,8 @@ Spoilblock.settings = (function () {
     },
     toggle: {
       set: (value) => {
+        Spoilblock.events.emit('toggle:update');
+
         return browser.storage.local.set({'toggle:global': value}).then(() => value);
       },
       get: () => {

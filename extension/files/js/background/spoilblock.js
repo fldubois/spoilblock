@@ -93,14 +93,15 @@ browser.webNavigation.onCommitted.addListener((details) => {
   Spoilblock.toolbar.update(details.tabId, details.url);
 });
 
-browser.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local') {
-    browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
-      const tab = tabs.shift();
+const updateCurrentTabIcon = () => {
+  browser.tabs.query({currentWindow: true, active: true}).then((tabs) => {
+    const tab = tabs.shift();
 
-      if (typeof tab.url === 'string') {
-        Spoilblock.toolbar.update(tab.id, tab.url);
-      }
-    });
-  }
-});
+    if (typeof tab.url === 'string') {
+      Spoilblock.toolbar.update(tab.id, tab.url);
+    }
+  });
+}
+
+Spoilblock.events.on('toggle:update',    updateCurrentTabIcon);
+Spoilblock.events.on('whitelist:update', updateCurrentTabIcon);

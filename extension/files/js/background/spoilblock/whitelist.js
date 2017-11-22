@@ -54,6 +54,8 @@ Spoilblock.whitelist = (function () {
       });
     },
     set: ({scope, url, values}) => {
+      Spoilblock.events.emit('whitelist:update');
+
       if (typeof url === 'string') {
         const keys = getKeys(url);
 
