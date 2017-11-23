@@ -16,13 +16,17 @@
     "npm": ">=3.0.0"
   },
   "scripts": {
-    "test": "npm run test:lint && npm run test:eslint",
-    "test:lint": "web-ext lint --source-dir files",
-    "test:eslint": "eslint files/js",
+    "test": "npm run test:lint",
+    "test:lint": "npm run test:lint:ext && npm run test:lint:js && npm run test:lint:css",
+    "test:lint:ext": "web-ext lint --source-dir files",
+    "test:lint:js": "eslint files/js",
+    "test:lint:css": "stylelint \"files/css/*.css\"",
     "start": "web-ext run --source-dir files"
   },
   "devDependencies": {
     "eslint": "^4.9.0",
+    "stylelint": "^8.2.0",
+    "stylelint-config-recommended": "^1.0.0",
     "web-ext": "^2.0.0"
   }
 }

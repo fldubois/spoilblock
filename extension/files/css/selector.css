@@ -45,13 +45,13 @@ button::-moz-focus-inner {
 
   pointer-events: none;
 
-  z-index:99999;
+  z-index: 99999;
 }
 
 #s8k-select-close {
   position: absolute;
 
-  top:   5px;
+  top: 5px;
   right: 5px;
 
   color: rgba(255, 255, 255, 1);
@@ -65,10 +65,10 @@ button::-moz-focus-inner {
 #s8k-select-box {
   position: absolute;
 
-  top:  0;
+  top: 0;
   left: 0;
 
-  width:  0;
+  width: 0;
   height: 0;
 
   box-sizing: border-box;

@@ -5,7 +5,7 @@
 
   background-color: rgba(204, 204, 204, 1);
 
-  background-image:url("../icons/spoilblock.svg");
+  background-image: url("../icons/spoilblock.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -30,7 +30,7 @@
 
   float: right;
 
-  margin-top:   5px;
+  margin-top: 5px;
   margin-right: 5px;
 
   color: #4d4d4f;
