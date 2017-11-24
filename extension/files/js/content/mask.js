@@ -62,7 +62,7 @@ const spoilers = {
 const refresh = () => {
   return Promise.all([
     browser.runtime.sendMessage({action: 'toggle:get'}),
-    browser.runtime.sendMessage({action: 'whitelist:get', url: window.location.href}),
+    browser.runtime.sendMessage({action: 'whitelist:get', url: window.location.href})
   ]).then(([toggle, whitelist]) => {
     const enabled = toggle && whitelist.enabled;
 
@@ -76,7 +76,7 @@ const refresh = () => {
 
     return enabled;
   });
-}
+};
 
 browser.runtime.sendMessage({action: 'spoilers:get', hostname: window.location.hostname}).then((list) => {
   list.forEach(spoilers.init);
@@ -91,7 +91,7 @@ browser.runtime.onMessage.addListener((message) => {
     return false;
   }
 
-  if (typeof message.event === 'string') {console.log('message.event', message.event);
+  if (typeof message.event === 'string') {
     if (['toggle:update', 'whitelist:update'].includes(message.event)) {
       return refresh();
     }

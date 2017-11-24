@@ -7,7 +7,7 @@ Spoilblock.whitelist = (function () {
     return {
       page: `toggle:page:${parts.href}`,
       site: `toggle:site:${parts.hostname}`
-    }
+    };
   };
 
   return {
@@ -30,7 +30,7 @@ Spoilblock.whitelist = (function () {
             enabled: data[keys.site] && data[keys.page],
             page:    data[keys.page],
             site:    data[keys.site]
-          }
+          };
         });
       }
 
@@ -68,7 +68,7 @@ Spoilblock.whitelist = (function () {
         return browser.storage.local.remove(keys);
       }).then(() => {
         const entries = values.reduce((memo, value) => {
-          return {...memo, [`toggle:${scope}:${value}`]: false};
+          return Object.assign(memo, {[`toggle:${scope}:${value}`]: false});
         }, {});
 
         return browser.storage.local.set(entries);

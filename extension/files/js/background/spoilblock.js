@@ -101,7 +101,7 @@ const updateCurrentTabIcon = () => {
       Spoilblock.toolbar.update(tab.id, tab.url);
     }
   });
-}
+};
 
 Spoilblock.events.on('toggle:update',    updateCurrentTabIcon);
 Spoilblock.events.on('whitelist:update', updateCurrentTabIcon);
